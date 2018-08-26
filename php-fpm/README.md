@@ -2,8 +2,8 @@
 Production ready PHP-FPM (FastCGI Process Manager) image based on Alpine Linux + izsendmail for MTA logging
 
 # Supported tags
--	`7.2.8-BUILD`, `7.2.8`, `7.2`, `7`, `latest`
--	`7.1.20-BUILD`, `7.1.20`, `7.1`,
+-	`7.2.9-BUILD`, `7.2.9`, `7.2`, `7`, `latest`
+-	`7.1.21-BUILD`, `7.1.21`, `7.1`,
 -	`5.6.37-BUILD`, `5.6.37`, `5.6`, `5`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
