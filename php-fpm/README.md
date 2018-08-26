@@ -1,44 +1,44 @@
 # Description
-Production ready PHP-FPM image based on Alpine Linux + izsendmail for MTA logging
+Production ready PHP-FPM (FastCGI Process Manager) image based on Alpine Linux + izsendmail for MTA logging
 
-# Supported tags (`Dockerfile` will be included in a future release)
-
-All images are based on [izdock httpd image](/r/izdock/httpd/)
-
+# Supported tags
 -	`7.2.8-BUILD`, `7.2.8`, `7.2`, `7`, `latest`
 -	`7.1.20-BUILD`, `7.1.20`, `7.1`,
 -	`5.6.37-BUILD`, `5.6.37`, `5.6`, `5`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
 
+# Dockerfile
+- https://github.com/ugoviti/izdock/blob/master/php-fpm/Dockerfile
+
 # Features
-- Small image footprint
+- Small image footprint (all images are based on [izdock httpd image](/r/izdock/httpd/))
 - The Apache HTTPD Web Server is removed from this image
 - You can use `izdock/php-fpm` as sidecar image (Docker Compose or Kubernetes) for NGINX or Apache configured with MPM Event and Reverse Proxy for PHP pages
 - Build from scratch PHP interpreter with all modules included, plus external modules (igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool)
 - Included izsendmail bash script as wrapper for `msmtp` for PHP logging of outgoing emails
 - Many customizable variables to use
 
-# Quick reference
-
--	**Where to get help**:
-	[InitZero Corporate Support](https://www.initzero.it/)
-
--	**Where to file issues**:
-	[https://github.com/ugoviti](https://github.com/ugoviti)
-
--	**Maintained by**:
-	[Ugo Viti](https://github.com/ugoviti)
-
--	**Supported architectures**: ([more info](https://github.com/docker-library/official-images#architectures-other-than-amd64))
-	[`amd64`](https://hub.docker.com/r/amd64/httpd/
-
--	**Supported Docker versions**:
-	[the latest release](https://github.com/docker/docker-ce/releases/latest) (down to 1.6 on a best-effort basis)
-
 # What is php-fpm?
 
-TODO
+PHP-FPM (FastCGI Process Manager) is an alternative PHP FastCGI implementation with some additional features useful for sites of any size, especially busier sites.
+
+These features include:
+
+- Adaptive process spawning (NEW!)
+- Basic statistics (ala Apache's mod_status) (NEW!)
+- Advanced process management with graceful stop/start
+- Ability to start workers with different uid/gid/chroot/environment and different php.ini (replaces safe_mode)
+- Stdout & stderr logging
+- Emergency restart in case of accidental opcode cache destruction
+- Accelerated upload support
+- Support for a "slowlog"
+- Enhancements to FastCGI, such as fastcgi_finish_request() - a special function to finish request & flush all data while continuing to do something time-consuming (video converting, stats processing, etc.)
+
+... and much more.
+
+It was not designed with virtual hosting in mind (large amounts of pools) however it can be adapted for any usage model.
+
 
 # How to use this image.
 
@@ -59,6 +59,23 @@ $ docker run -dit --name my-webapp -p 8080:80 -v "$PWD":/var/www/localhost/htdoc
 ### Configuration
 
 TODO
+
+# Quick reference
+
+-	**Where to get help**:
+	[InitZero Corporate Support](https://www.initzero.it/)
+
+-	**Where to file issues**:
+	[https://github.com/ugoviti](https://github.com/ugoviti)
+
+-	**Maintained by**:
+	[Ugo Viti](https://github.com/ugoviti)
+
+-	**Supported architectures**:
+	[`amd64`]
+
+-	**Supported Docker versions**:
+	[the latest release](https://github.com/docker/docker-ce/releases/latest) (down to 1.6 on a best-effort basis)
 
 ## `izdock/php-fpm:<version>`
 

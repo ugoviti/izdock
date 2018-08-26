@@ -2,41 +2,22 @@
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
 # Supported tags
-
-All images are based on [official httpd docker image](/_/httpd/) and [Alpine Linux 3.7](/_/alpine/)
 -	`2.4.34-php7.2.9-BUILD`, `2.4.34-php7.2.9`, `2.4-php7.2`, `php7.2`, `2.4.34`, `2.4`, `2`, `latest`
 -	`2.4.34-php7.1.20-BUILD`, `2.4.34-php7.1.20`, `2.4-php7.1`, `php7.1` 
 -	`2.4.34-php5.6.37-BUILD`, `2.4.34-php5.6.37`, `2.4-php5.6`, `php5.6`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
 
+# Dockerfile
+- https://github.com/ugoviti/izdock/blob/master/httpd/Dockerfile
+
 # Features
 - Small image footprint
-- Based on Official HTTPD Alpine Linux image
+- Based on official [httpd](/_/httpd/) and [Alpine Linux 3.7](/_/alpine/) image
 - For best performance and scalability the default Apache Workers is **mpm_event**
 - Build from scratch PHP interpreter with thread safety enabled and all php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
 - Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts
 - Many customizable variables to use
-
-# Dockerfile
-https://github.com/ugoviti/izdock/blob/master/httpd/Dockerfile
-
-# Quick reference
-
--	**Where to get help**:
-	[InitZero Corporate Support](https://www.initzero.it/)
-
--	**Where to file issues**:
-	[https://github.com/ugoviti](https://github.com/ugoviti)
-
--	**Maintained by**:
-	[Ugo Viti](https://github.com/ugoviti)
-
--	**Supported architectures**: ([more info](https://github.com/docker-library/official-images#architectures-other-than-amd64))  
-	[`amd64`](https://hub.docker.com/r/amd64/httpd/
-
--	**Supported Docker versions**:
-	[the latest release](https://github.com/docker/docker-ce/releases/latest) (down to 1.6 on a best-effort basis)
 
 # What is httpd?
 
@@ -44,11 +25,11 @@ The Apache HTTP Server, colloquially called Apache, is a Web server application 
 
 > [wikipedia.org/wiki/Apache_HTTP_Server](http://en.wikipedia.org/wiki/Apache_HTTP_Server)
 
-![logo](https://raw.githubusercontent.com/docker-library/docs/8e367edd887f5fe876890a0ab4d08806527a1571/httpd/logo.png)
+![logo](https://www.apache.org/img/asf_logo.png)
 
 # How to use this image.
 
-This image only contains Apache httpd with the defaults from official httpd repository and the PHP already installed with many modules already compiled into.
+This image only contains Apache httpd with the defaults from official httpd repository and the PHP already installed (**mod_php**) with many modules already compiled as **libphp**.
 
 # Environment variables
 
@@ -133,6 +114,23 @@ RUN sed -i \
 		-e 's/^#\(LoadModule .*mod_socache_shmcb.so\)/\1/' \
 		conf/httpd.conf
 ```
+
+# Quick reference
+
+-	**Where to get help**:
+	[InitZero Corporate Support](https://www.initzero.it/)
+
+-	**Where to file issues**:
+	[https://github.com/ugoviti](https://github.com/ugoviti)
+
+-	**Maintained by**:
+	[Ugo Viti](https://github.com/ugoviti)
+
+-	**Supported architectures**:
+	[`amd64`]
+
+-	**Supported Docker versions**:
+	[the latest release](https://github.com/docker/docker-ce/releases/latest) (down to 1.6 on a best-effort basis)
 
 ## `httpd:<version>`
 

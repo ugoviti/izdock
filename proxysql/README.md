@@ -1,18 +1,97 @@
 # Description
-Production ready [ProxySQL](http://www.proxysql.com/) image based on Debian 9 Slim
+Production ready [ProxySQL](http://www.proxysql.com/) image based on Debian 9 (stretch) Slim
 
-# Supported tags (`Dockerfile` will be included in a future release)
-
+# Supported tags
 -	`1.4.10-BUILD`, `1.4.10`, `1.4`, `1`, `latest`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
 
+# Dockerfile
+- https://github.com/ugoviti/izdock/blob/master/proxysql/Dockerfile
+
 # Features
-- Small image footprint
+- Small image footprint based on [Debian 9 (stretch) Slim](https://hub.docker.com/_/debian/)
 - Using [tini](https://github.com/krallin/tini) as init process
 
-# Quick reference
+# What is ProxySQL?
+ProxySQL helps you squeeze the last drop of performance out of your MySQL cluster, without controlling the applications that generate the queries.
 
+# How to use this image.
+
+### Configuration
+
+Create `proxysql.cnf`:
+
+```ini
+datadir="/var/lib/proxysql"
+
+admin_variables =
+{
+  admin_credentials="admin:tcPzhHnWYr795pzK"
+  mysql_ifaces="0.0.0.0:6032"
+  refresh_interval=2000
+}
+
+mysql_variables=
+{
+  threads=2
+  max_connections=2048
+  default_query_delay=0
+  #default_query_timeout=10000
+  poll_timeout=2000
+  interfaces="0.0.0.0:3306"
+  default_schema="information_schema"
+  stacksize=1048576
+  connect_timeout_server=3000
+  monitor_history=60000
+  monitor_connect_interval=20000
+  monitor_ping_interval=10000
+  ping_timeout_server=500
+  commands_stats=true
+  sessions_sort=true
+}
+
+mysql_servers =
+(
+  { address="database.prod.svc.cluster.local", port=3306, hostgroup=0, max_connections=2048 }
+)
+
+mysql_users =
+(
+  { username = "admin", password = "tcPzhHnWYr795pzK", default_hostgroup = 0 },
+  { username = "user1", password = "xc3PCTanXWoWppHE", default_hostgroup = 0 },
+  { username = "user2", password = "2S8hGuAhZ9XD5k9F", default_hostgroup = 0 }
+)
+
+mysql_query_rules =
+(
+#	{
+#		rule_id=1
+#		active=1
+#		match_pattern="^SELECT"
+#		destination_hostgroup=0
+#		apply=1
+#	}
+)
+```
+
+### Create a `Dockerfile` in your project
+
+```dockerfile
+FROM izdock/proxysql
+COPY ./proxysql.cnf /etc/proxysql.cnf
+```
+
+### Without a `Dockerfile`
+
+If you don't want to include a `Dockerfile` in your project, it is sufficient to do the following:
+
+```console
+$ docker run -dit --name proxysql -p 3306:3306 -v /path/to/proxysql.cnf:/etc/proxysql.cnf izdock/proxysql
+```
+
+
+# Quick reference
 -	**Where to get help**:
 	[InitZero Corporate Support](https://www.initzero.it/)
 
@@ -22,33 +101,11 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 -	**Maintained by**:
 	[Ugo Viti](https://github.com/ugoviti)
 
--	**Supported architectures**: ([more info](https://github.com/docker-library/official-images#architectures-other-than-amd64))
-	[`amd64`](https://hub.docker.com/r/amd64/httpd/
+-	**Supported architectures**:
+	[`amd64`]
 
 -	**Supported Docker versions**:
 	[the latest release](https://github.com/docker/docker-ce/releases/latest) (down to 1.6 on a best-effort basis)
-
-# What is ProxySQL?
-
-ProxySQL helps you squeeze the last drop of performance out of your MySQL cluster, without controlling the applications that generate the queries.
-
-# How to use this image.
-
-### Create a `Dockerfile` in your project
-
-TODO
-
-### Without a `Dockerfile`
-
-If you don't want to include a `Dockerfile` in your project, it is sufficient to do the following:
-
-```console
-$ docker run -dit --name proxysql -p 3306:3306 izdock/proxysql
-```
-
-### Configuration
-
-TODO
 
 # License
 
