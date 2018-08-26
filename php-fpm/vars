@@ -1,0 +1,12 @@
+
+
+build=28
+
+image_from="izdock/httpd:php7.2"
+
+source <(grep -e "^PHP_VERSION" ../httpd/vars)
+tag_ver_major=${PHP_VERSION_MAJOR}
+tag_ver_minor=${PHP_VERSION_MINOR}
+tag_ver_full=${PHP_VERSION}
+tag_ver_latest=yes
+

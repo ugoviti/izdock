@@ -1,0 +1,19 @@
+upload_gcloud=0
+repo_gcloud=iz-wms
+
+upload_docker=1
+repo_docker=izdock
+
+#: ${build:=1}
+
+: ${container:=}
+: ${image_from:=}
+: ${tag_prefix:=}
+: ${tag_suffix:=}
+: ${tag_ver_major:=}
+: ${tag_ver_minor:=}
+: ${tag_ver_full:=}
+: ${tag_ver_latest:=yes}
+
+tags="latest ${tag_prefix}${tag_ver_major}${tag_suffix} ${tag_prefix}${tag_ver_minor}${tag_suffix} ${tag_prefix}${tag_ver_full}${tag_suffix} ${tag_prefix}${tag_ver_full}${tag_suffix}-${build} "
+args="image_from=${image_from} tag_ver_major=${tag_ver_major} tag_ver_minor=${tag_ver_minor} tag_ver_full=${tag_ver_full} "

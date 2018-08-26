@@ -1,0 +1,10 @@
+build=10
+
+image_from=""
+
+tag_prefix=""
+tag_suffix=""
+tag_ver_major=
+tag_ver_minor=
+tag_ver_full=
+
