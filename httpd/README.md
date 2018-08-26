@@ -1,12 +1,11 @@
 # Description
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
-# Supported tags (`Dockerfile` will be included in a future release)
+# Supported tags
 
 All images are based on [official httpd docker image](/_/httpd/) and [Alpine Linux 3.7](/_/alpine/)
-
--	`2.4.34-php7.2.8-BUILD`, `2.4.34-php7.2.8`, `2.4-php7.2`, `php7.2`, `2.4.34`, `2.4`, `2`, `latest`
--	`2.4.34-php7.1.20-BUILD`, `2.4.34-php7.1.20`, `2.4-php7.1`, `php7.1`
+-	`2.4.34-php7.2.9-BUILD`, `2.4.34-php7.2.9`, `2.4-php7.2`, `php7.2`, `2.4.34`, `2.4`, `2`, `latest`
+-	`2.4.34-php7.1.20-BUILD`, `2.4.34-php7.1.20`, `2.4-php7.1`, `php7.1` 
 -	`2.4.34-php5.6.37-BUILD`, `2.4.34-php5.6.37`, `2.4-php5.6`, `php5.6`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
@@ -14,10 +13,13 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 # Features
 - Small image footprint
 - Based on Official HTTPD Alpine Linux image
-- For best performance and scalability the default Apache Workers is **MPM Event**
+- For best performance and scalability the default Apache Workers is **mpm_event**
 - Build from scratch PHP interpreter with thread safety enabled and all php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
 - Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts
 - Many customizable variables to use
+
+# Dockerfile
+https://github.com/ugoviti/izdock/blob/master/httpd/Dockerfile
 
 # Quick reference
 
