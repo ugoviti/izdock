@@ -14,7 +14,9 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 - Using [tini](https://github.com/krallin/tini) as init process
 
 # What is ProxySQL?
+ProxySQL is a high performance, high availability, protocol aware proxy for MySQL.
 ProxySQL helps you squeeze the last drop of performance out of your MySQL cluster, without controlling the applications that generate the queries.
+ProxySQL has an advanced multi-core architecture. It's built from the ground up to support hundreds of thousands of concurrent connections, multiplexed to potentially hundreds of backend servers. The largest ProxySQL deployment spans several hundred proxies.
 
 # How to use this image.
 
