@@ -245,21 +245,21 @@ RUN set -xe \
       && echo "--with-sodium=/usr" \
      ) \
     --disable-cgi \
-    --disable-debug \
-    --disable-dmalloc \
-    --disable-dtrace \
-    --disable-embedded-mysqli \
-    --disable-gcov \
-    --disable-gd-jis-conv \
+#    --disable-debug \
+#    --disable-dmalloc \
+#    --disable-dtrace \
+#    --disable-embedded-mysqli \
+#    --disable-gcov \
+#    --disable-gd-jis-conv \
     --disable-ipv6 \
-    --disable-libgcc \
-    --disable-maintainer-zts \
-    --disable-phpdbg \
-    --disable-phpdbg-debug \
-    --disable-re2c-cgoto \
+#    --disable-libgcc \
+#    --disable-maintainer-zts \
+#    --disable-phpdbg \
+#    --disable-phpdbg-debug \
+#    --disable-re2c-cgoto \
     --disable-rpath \
-    --disable-sigchild \
-    --disable-static \
+#    --disable-sigchild \
+#    --disable-static \
     --enable-bcmath \
     --enable-calendar \
     --enable-dba \
@@ -484,4 +484,4 @@ EXPOSE 80 443 9000
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.34-php7.1.21-78"
+ENV APP_VER "2.4.34-php7.1.21-80"
