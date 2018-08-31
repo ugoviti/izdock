@@ -23,6 +23,7 @@ ARG HTTPD_PREFIX=${PREFIX}/apache2
 ARG PHP_PREFIX=${PREFIX}/php
 ARG PHP_INI_DIR=${PHP_PREFIX}/etc/php
 ENV PATH=${PATH}:${HTTPD_PREFIX}/bin:${PHP_PREFIX}/bin:${PHP_PREFIX}/sbin
+ENV UMASK "0002"
 
 # PHP extra modules to enable
 ARG PHP_MODULES_PECL="igbinary apcu"
@@ -109,6 +110,12 @@ RUN set -xe \
     nghttp2-libs \
     pcre \
     pcre2 \
+    libpcre16 \
+    libpcre32 \
+    libpcre2-16 \
+    libpcre2-32 \
+    pcre2-dev \
+    pcre-dev \
     postgresql \
     readline \
     recode \
@@ -190,8 +197,6 @@ RUN set -xe \
     make \
     net-snmp-dev \
     nghttp2-dev \
-    pcre2-dev \
-    pcre-dev \
     pkgconf \
     re2c \
     readline-dev \
@@ -208,6 +213,10 @@ RUN set -xe \
   \
   && : "---------- FIX: libpcre2 ----------" \
   && (cd /usr/lib; ln -sf libpcre2-posix.a libpcre2.a; ln -sf libpcre2-posix.so libpcre2.so) \
+  \
+  && : "---------- FIX: configuring default apache mpm worker to mpm_prefork, otherwise php get force compiled as ZTS (ThreadSafe support) if mpm_event or mpm_worker are used ----------" \
+  && sed -r "s|^LoadModule mpm_|#LoadModule mpm_|i" -i "${HTTPD_PREFIX}/conf/httpd.conf" \
+  && sed -r "s|^#LoadModule mpm_prefork_module|LoadModule mpm_prefork_module|i" -i "${HTTPD_PREFIX}/conf/httpd.conf" \
   \
   && : "---------- PHP Build Flags ----------" \
   && export LDFLAGS="-Wl,-O2 -Wl,--hash-style=both -pie" \
@@ -245,7 +254,7 @@ RUN set -xe \
       && echo "--with-sodium=/usr" \
      ) \
     --disable-cgi \
-#    --disable-debug \
+    --disable-debug \
 #    --disable-dmalloc \
 #    --disable-dtrace \
 #    --disable-embedded-mysqli \
@@ -304,7 +313,7 @@ RUN set -xe \
     --with-mhash \
     --with-mysqli \
     --with-openssl=/usr \
-    --with-pcre-regex \
+    --with-pcre-regex=/usr \
     --with-pdo-mysql \
     --with-pdo-pgsql \
     --with-pdo-sqlite \
@@ -484,4 +493,4 @@ EXPOSE 80 443 9000
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.34-php7.1.21-80"
+ENV APP_VER "2.4.34-php5.6.37-62"

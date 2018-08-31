@@ -4,7 +4,7 @@ FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
 
-ENV APP_NAME "server-nfs"
+ENV APP_NAME "nfs-kernel"
 
 # NFS daemon configuration
 ENV EXPORT_PATH    "/data"
@@ -24,8 +24,7 @@ RUN set -x \
  && rm -rf /var/cache/apk/* /tmp/*
 
 # add files to container
-ADD Dockerfile /
-ADD filesystem /
+ADD Dockerfile filesystem /
 
 
 # http://wiki.linux-nfs.org/wiki/index.php/Nfsv4_configuration
@@ -43,6 +42,6 @@ EXPOSE 2049
 
 # entrypoint
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/usr/local/bin/nfsd"]
+CMD ["/entrypoint.sh"]
 
-ENV APP_VER
+ENV APP_VER "3.8.1-3"
