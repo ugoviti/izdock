@@ -17,8 +17,8 @@ init_rpc() {
         touch /run/rpcbind/rpcbind.xdr /run/rpcbind/portmap.xdr
     fi
     # rpcbind is enabled for now to overcome a bug with slow startup, it shouldn't be required.
-    rpcbind || return 0
-    rpc.statd -L || return 0
+    rpcbind -ds || return 0
+    rpc.statd --no-notify --port 32765 --outgoing-port 32766 || return 0
 
     echo "--> displaying rpcbind status..."
     /sbin/rpcinfo 
@@ -86,7 +86,7 @@ echo "--> exporting file system..."
 echo
 
 echo "=> starting mountd in the foreground..."
-/usr/sbin/rpc.mountd -d all -u -F -N 2 -N 3
+/usr/sbin/rpc.mountd -d all -u -F -N 2 -N 3 -p 20048
 }
 
 hooks_always

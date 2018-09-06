@@ -38,10 +38,10 @@ RUN  mkdir -p /var/lib/nfs/rpc_pipefs \
 VOLUME ["${EXPORT_PATH}"]
 
 # exposed ports
-EXPOSE 2049
+EXPOSE 111/udp 111/tcp 2049/udp 2049/tcp 20048/udp 20048/tcp 32765/udp 32765/tcp
 
 # entrypoint
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh"]
 
-ENV APP_VER "3.8.1-3"
+ENV APP_VER "3.8.1-6"

@@ -43,7 +43,7 @@ if ! systemctl status docker >/dev/null; then sudo systemctl start docker ; fi
 docker_build() {
 
 # update Dockerfile version
-sed "s/^ENV APP_VER.*/ENV APP_VER \"${tag_prefix}${tag_ver_full}${tag_suffix}-${build}\"/" -i Dockerfile
+sed "s/^ENV APP_VER.*/ENV APP_VER \"${tag_prefix}${tag_ver}${tag_suffix}-${build}\"/" -i Dockerfile
 
 # build
 if [ ! -z "$args" ]; then
@@ -69,7 +69,7 @@ set +x
 [ $retval != 0 ] && exit 1
 
 # remove the latest tag if not wanted
-[ "${tag_ver_latest}" != "yes" ] && docker rmi ${repo}${container}:latest
+[ "${tag_latest}" != "yes" ] && docker rmi ${repo}${container}:latest
 
 [ "$upload_docker" = 1 ] && upload_container
 [ "$upload_gcloud" = 1 ] && upload_container
