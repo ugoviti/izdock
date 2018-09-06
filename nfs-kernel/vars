@@ -1,0 +1,10 @@
+build=6
+
+image_from="alpine:3.8"
+
+tag_ver_major=3
+tag_ver_minor=3.8
+tag_ver_full=3.8.1
+
+tag_prefix=""
+tag_suffix=""
