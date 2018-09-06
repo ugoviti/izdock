@@ -3,7 +3,7 @@
 
 # entrypoint hooks
 hooks_always() {
-
+# default variables
 : ${HTTPD_ENABLED:=true}
 : ${PHP_ENABLED:=true}
 
@@ -27,15 +27,26 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
       ;;
   esac
 
+  PHP_VERSION_ALL=$(php -v | head -n1)
+  # Verify if PHP is Thread Safe compiled (ZTS)
+  case $HTTPD_MPM in
+	  worker|event)
+	  if echo $PHP_VERSION_ALL | grep -i nts >/dev/null; then
+      echo "--> Disabling PHP because default apache worker is mpm_$HTTPD_MPM and PHP IS NOT ZTS (Thread Safe) compiled: $PHP_VERSION_ALL"
+      PHP_ENABLED=false
+      fi
+      ;;
+  esac
+
   if [ "$PHP_ENABLED" = "true" ]; then
-    echo "--> Enabling $(php -v| head -n1)"
+    echo "--> Enabling $PHP_VERSION_ALL"
     # enable mod_php
     echo -e "#LoadModule php7_module        modules/libphp7.so
     DirectoryIndex index.php index.html
     <FilesMatch \.php$>
       SetHandler application/x-httpd-php
     </FilesMatch>" > ${HTTPD_CONF_DIR}/conf.d/php.conf
-    [ "$PHPINFO" = "true" ] && echo "<?php phpinfo(); ?>" > ${DOCUMENTROOT}/test-info.php
+    [ "$PHPINFO" = "true" ] && echo "<?php phpinfo(); ?>" > ${DOCUMENTROOT}/info.php
    else
      echo "--> Disabling PHP because: PHP_ENABLED=$PHP_ENABLED"
      sed "s/^LoadModule php/#LoadModule php/" -i "${HTTPD_CONF_DIR}/httpd.conf"

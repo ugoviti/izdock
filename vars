@@ -10,10 +10,22 @@ repo_docker=izdock
 : ${image_from:=}
 : ${tag_prefix:=}
 : ${tag_suffix:=}
+: ${tag_latest:=yes}
+
+# versioning
 : ${tag_ver_major:=}
 : ${tag_ver_minor:=}
-: ${tag_ver_full:=}
-: ${tag_ver_latest:=yes}
+: ${tag_ver_patch:=}
+: ${tag_ver:=$tag_ver_major.$tag_ver_minor.$tag_ver_patch}
 
-tags="latest ${tag_prefix}${tag_ver_major}${tag_suffix} ${tag_prefix}${tag_ver_minor}${tag_suffix} ${tag_prefix}${tag_ver_full}${tag_suffix} ${tag_prefix}${tag_ver_full}${tag_suffix}-${build} "
-args="image_from=${image_from} tag_ver_major=${tag_ver_major} tag_ver_minor=${tag_ver_minor} tag_ver_full=${tag_ver_full} "
+tags="latest"
+tags+=" ${tag_prefix}${tag_ver}${tag_suffix}-${build}"
+tags+=" ${tag_prefix}${tag_ver}${tag_suffix}"
+tags+=" ${tag_prefix}${tag_ver_major}${tag_suffix}"
+tags+=" ${tag_prefix}${tag_ver_major}.${tag_ver_minor}${tag_suffix}"
+
+args="image_from=${image_from}"
+args+=" tag_ver=${tag_ver}"
+args+=" tag_ver_major=${tag_ver_major}"
+args+=" tag_ver_minor=${tag_ver_minor}"
+args+=" tag_ver_patch=${tag_ver_patch}"

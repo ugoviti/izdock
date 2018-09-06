@@ -1,4 +1,4 @@
-ARG image_from="izdock/httpd:2.4.34-php-7.1.20"
+ARG image_from="izdock/httpd:2.4.34-php-7.2.9"
 FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
@@ -63,4 +63,4 @@ ADD Dockerfile /
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "php-fpm"]
 
-ENV APP_VER "7.2.9-28"
+ENV APP_VER "7.2.9-29"

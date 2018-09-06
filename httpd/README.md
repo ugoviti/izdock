@@ -14,8 +14,8 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 # Features
 - Small image footprint
 - Based on official [httpd](/_/httpd/) and [Alpine Linux 3.7](/_/alpine/) image
-- For best performance and scalability the default Apache Workers is **mpm_event**
-- Build from scratch PHP interpreter with thread safety enabled and all php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
+- Configurable Apache MPM Worker (use **event** or **worker** for best scalability and memory optimization, PHP get automatically disabled because is not ZTS compiled). The default Apache MPM Worker is **prefork**
+- Built from scratch PHP as NTS (Not Threat Safe) and many useful php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
 - Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts
 - Many customizable variables to use
 
@@ -40,9 +40,9 @@ You can change the default behaviour using the following variables (in bold the 
 `PHP_ENABLED` = (**true**|false)
 `SERVERNAME` = (**$HOSTNAME**)
 `HTTPD_CONF_DIR` = (**/etc/apache2**)
-`HTTPD_MPM` = (**event**|worker|prefork)
+`HTTPD_MPM` = (event|worker|**prefork**)
 `DOCUMENTROOT` = (**/var/www/localhost/htdocs**)
-`PHPINFO` = (**false**|true) # if true, then automatically create a test-info.php file into webroot
+`PHPINFO` = (**false**|true) # if true, then automatically create a **info.php** file into webroot
 
 **MSMTP MTA Agent:** 
 `domain` = (**$HOSTNAME**)

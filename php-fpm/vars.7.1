@@ -1,6 +1,6 @@
 #source $PWD/vars
 
-build=56
+build=57
 
 image_from="izdock/httpd:php7.1"
 
@@ -8,6 +8,6 @@ source <(grep -e "^PHP_VERSION" ../httpd/vars.php7.1)
 tag_ver_major=${PHP_VERSION_MAJOR}
 tag_ver_minor=${PHP_VERSION_MINOR}
 tag_ver_full=${PHP_VERSION}
-tag_ver_latest=no
+tag_latest=no
 
 tags="${tag_ver_minor} ${tag_ver_full} ${tag_ver_full}-${build}"
