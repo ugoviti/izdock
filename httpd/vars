@@ -1,29 +1,11 @@
-#source $PWD/vars
-
-build=68
-
-# https://www.apache.org/dist/httpd/
-HTTPD_VERSION=2.4.34
-HTTPD_SHA256=fa53c95631febb08a9de41fd2864cfff815cf62d9306723ab0d4b8d7aa1638f0
+build=70
 
 # http://php.net/downloads.php
 PHP_VERSION_MAJOR=7
-PHP_VERSION_MINOR=7.2
+PHP_VERSION_MINOR=2
 PHP_VERSION_PATCH=9
-PHP_VERSION=7.2.9
 PHP_SHA256=3585c1222e00494efee4f5a65a8e03a1e6eca3dfb834814236ee7f02c5248ae0
 
-tag_ver_major=2
-tag_ver_minor=2.4
-tag_ver_full=$HTTPD_VERSION
+source $PWD/vars.common
+
 tag_latest=yes
-
-image_from="alpine:3.7"
-image_from_httpd="httpd:${tag_ver_full}-alpine"
-image_from_php="php:$PHP_VERSION-alpine"
-
-tag_prefix=""
-tag_suffix="-php${PHP_VERSION}"
-
-tags="php${PHP_VERSION_MINOR} ${tag_ver_minor}-php${PHP_VERSION_MINOR} ${tag_ver_full}-php${PHP_VERSION} ${tag_ver_full}-php${PHP_VERSION}-${build} ${tag_ver_full} ${tag_ver_minor} ${tag_ver_major}"
-args="HTTPD_VERSION=$HTTPD_VERSION HTTPD_SHA256=$HTTPD_SHA256 PHP_VERSION=$PHP_VERSION PHP_SHA256=$PHP_SHA256 "

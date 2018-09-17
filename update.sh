@@ -87,7 +87,7 @@ upload_container() {
 }
 
 remove_tags() {
-  set -xe
+  #set -xe
   # remove local tags
   if [ ! -z "$tags" ]; then
    for tag in $tags ; do 

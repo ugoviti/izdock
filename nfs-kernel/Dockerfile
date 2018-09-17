@@ -44,4 +44,4 @@ EXPOSE 111/udp 111/tcp 2049/udp 2049/tcp 20048/udp 20048/tcp 32765/udp 32765/tcp
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh"]
 
-ENV APP_VER "3.8.1-6"
+ENV APP_VER "3.8.1-7"

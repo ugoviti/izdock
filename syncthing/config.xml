@@ -1,0 +1,26 @@
+<configuration version="28">
+    <gui enabled="true" tls="false" debugging="false">
+        <address>0.0.0.0:8384</address>
+        <theme>default</theme>
+        <apikey>izsync</apikey>
+        <user>admin</user>
+        <password>$2a$10$cwYNkExpN0wjHXqsjlz4L.Q.SWeKYDfRr3CfB5HYyxVy6eBvEmlbu</password>
+    </gui>
+    <options>
+        <listenAddress>default</listenAddress>
+        <globalAnnounceEnabled>false</globalAnnounceEnabled>
+        <localAnnounceEnabled>false</localAnnounceEnabled>
+        <reconnectionIntervalS>10</reconnectionIntervalS>
+        <relaysEnabled>false</relaysEnabled>
+        <startBrowser>false</startBrowser>
+        <natEnabled>false</natEnabled>
+        <urAccepted>-1</urAccepted>
+        <urPostInsecurely>false</urPostInsecurely>
+        <urInitialDelayS>1800</urInitialDelayS>
+        <restartOnWakeup>true</restartOnWakeup>
+        <autoUpgradeIntervalH>0</autoUpgradeIntervalH>
+        <defaultFolderPath>/data</defaultFolderPath>
+    </options>
+    <folder id="data" label="data" path="/data" type="sendreceive" rescanIntervalS="3600" fsWatcherEnabled="true" fsWatcherDelayS="10" ignorePerms="false" autoNormalize="true">
+    </folder>
+</configuration>

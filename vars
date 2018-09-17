@@ -21,8 +21,8 @@ repo_docker=izdock
 tags="latest"
 tags+=" ${tag_prefix}${tag_ver}${tag_suffix}-${build}"
 tags+=" ${tag_prefix}${tag_ver}${tag_suffix}"
-tags+=" ${tag_prefix}${tag_ver_major}${tag_suffix}"
 tags+=" ${tag_prefix}${tag_ver_major}.${tag_ver_minor}${tag_suffix}"
+tags+=" ${tag_prefix}${tag_ver_major}${tag_suffix}"
 
 args="image_from=${image_from}"
 args+=" tag_ver=${tag_ver}"

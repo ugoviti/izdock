@@ -5,6 +5,7 @@
 hooks_always() {
 # default variables
 : ${HTTPD_ENABLED:=true}
+: ${HTTPD_MOD_SSL:=false}
 : ${PHP_ENABLED:=true}
 
 # HTTPD configuration
@@ -21,7 +22,7 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
   # configure apache mpm
   case $HTTPD_MPM in
 	  worker|event|prefork)
-      echo "--> Configuring default apache worker to: mpm_$HTTPD_MPM"
+      echo "--> INFO: configuring default apache worker to: mpm_$HTTPD_MPM"
       sed -r "s|^LoadModule mpm_|#LoadModule mpm_|i" -i "${HTTPD_CONF_DIR}/httpd.conf"
       sed -r "s|^#LoadModule mpm_${HTTPD_MPM}_module|LoadModule mpm_${HTTPD_MPM}_module|i" -i "${HTTPD_CONF_DIR}/httpd.conf"
       ;;
@@ -32,14 +33,14 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
   case $HTTPD_MPM in
 	  worker|event)
 	  if echo $PHP_VERSION_ALL | grep -i nts >/dev/null; then
-      echo "--> Disabling PHP because default apache worker is mpm_$HTTPD_MPM and PHP IS NOT ZTS (Thread Safe) compiled: $PHP_VERSION_ALL"
+      echo "--> WARNING: disabling mod_php module because default apache worker is mpm_$HTTPD_MPM and PHP is not ZTS (Thread Safe) compiled: $PHP_VERSION_ALL"
       PHP_ENABLED=false
       fi
       ;;
   esac
 
   if [ "$PHP_ENABLED" = "true" ]; then
-    echo "--> Enabling $PHP_VERSION_ALL"
+    echo "--> INFO: enabling $PHP_VERSION_ALL"
     # enable mod_php
     echo -e "#LoadModule php7_module        modules/libphp7.so
     DirectoryIndex index.php index.html
@@ -48,14 +49,14 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
     </FilesMatch>" > ${HTTPD_CONF_DIR}/conf.d/php.conf
     [ "$PHPINFO" = "true" ] && echo "<?php phpinfo(); ?>" > ${DOCUMENTROOT}/info.php
    else
-     echo "--> Disabling PHP because: PHP_ENABLED=$PHP_ENABLED"
+     echo "--> WARNING: disabling mod_php module because: PHP_ENABLED=$PHP_ENABLED"
      sed "s/^LoadModule php/#LoadModule php/" -i "${HTTPD_CONF_DIR}/httpd.conf"
   fi
 fi
 
 # load php modules (used by php-fpm also)
 if [ "$PHP_ENABLED" = "true" ]; then
-  echo "=> Configuring PHP Modules based on $(php -v| head -n1)..."
+  echo "=> INFO: configuring PHP Modules based on $(php -v| head -n1)..."
   : ${PHP_PREFIX:=/usr/local/php}
   if [[ "${PHP_MODULES_ENABLED}" = "all" || "${PHP_MODULES_ENABLED}" = "ALL" ]]; then 
       for MODULE in ${PHP_PREFIX}/lib/php/extensions/*/*.so; do docker-php-ext-enable $MODULE ; done \
@@ -63,6 +64,35 @@ if [ "$PHP_ENABLED" = "true" ]; then
       for MODULE in ${PHP_MODULES_ENABLED} ; do echo "--> Enabling PHP module: $MODULE" ; docker-php-ext-enable $MODULE ; done
   fi
 fi
+
+# enable mod_ssl
+if [ "${HTTPD_MOD_SSL}" = "true" ]; then
+  echo "--> INFO: enabling mod_ssl module because: HTTPD_MOD_SSL=${HTTPD_MOD_SSL}"
+  sed "s/^#LoadModule ssl_module/LoadModule ssl_module/" -i "${HTTPD_CONF_DIR}/httpd.conf"
+fi
+
+# Verify if SSL Files Exist otherwise disable mod_ssl
+#set -x
+grep -H -r "^.*SSLCertificate.*File " ${HTTPD_CONF_DIR}/*.d/*.conf |
+{
+while read line; do 
+f=$(echo $line | awk '{print $1}' | sed 's/:$//')
+t=$(echo $line | awk '{print $2}')
+c=$(echo $line | awk '{print $3}')
+if [ ! -e "$c" ]; then
+  echo "--> ERROR: into $f the certificate $t file doesn't exist: $c"
+  ssl_err=1
+fi
+done
+#echo ssl_err=$ssl_err
+# to avoid apache from starting, disable ssl module if certs files doesn't exist
+if [ "$ssl_err" = "1" ]; then
+  echo "--> WARNING: disabling mod_ssl module because one or more certs files doesn't exist... please fix it"
+  #grep -r "^LoadModule ssl_module" ${HTTPD_CONF_DIR} | awk -F: '{print $1}' | while read file ; do sed 's/^LoadModule ssl_module/#LoadModule ssl_module/' -i $file ; done
+  sed "s/^LoadModule ssl_module/#LoadModule ssl_module/" -i "${HTTPD_CONF_DIR}/httpd.conf"
+fi
+}
+
 
 # SMTP variables
 : "${domain:=$HOSTNAME}"
