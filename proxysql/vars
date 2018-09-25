@@ -1,10 +1,9 @@
-build=14
+build=15
 
-image_from="debian:9.4-slim"
+image_from="debian:stretch-slim"
 
-tag_prefix=""
-tag_suffix=""
+tag_latest=yes
+
 tag_ver_major=1
-tag_ver_minor=1.4
-tag_ver_full=1.4.10
-
+tag_ver_minor=4
+tag_ver_patch=11

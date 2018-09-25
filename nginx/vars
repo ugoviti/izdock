@@ -1,5 +1,3 @@
-
-
 build=28
 
 image_from="nginx:1.14.0-alpine"

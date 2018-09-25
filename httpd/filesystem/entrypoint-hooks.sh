@@ -39,6 +39,7 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
       ;;
   esac
 
+  # enable mod_php
   if [ "$PHP_ENABLED" = "true" ]; then
     echo "--> INFO: enabling $PHP_VERSION_ALL"
     # enable mod_php
@@ -52,7 +53,36 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
      echo "--> WARNING: disabling mod_php module because: PHP_ENABLED=$PHP_ENABLED"
      sed "s/^LoadModule php/#LoadModule php/" -i "${HTTPD_CONF_DIR}/httpd.conf"
   fi
+
+  # enable mod_ssl
+  if [ "${HTTPD_MOD_SSL}" = "true" ]; then
+    echo "--> INFO: enabling mod_ssl module because: HTTPD_MOD_SSL=${HTTPD_MOD_SSL}"
+    sed "s/^#LoadModule ssl_module/LoadModule ssl_module/" -i "${HTTPD_CONF_DIR}/httpd.conf"
+  fi
+
+  # verify if SSL files exist otherwise disable mod_ssl
+  #set -x
+  grep -H -r "^.*SSLCertificate.*File " ${HTTPD_CONF_DIR}/*.d/*.conf |
+  {
+  while read line; do 
+  f=$(echo $line | awk '{print $1}' | sed 's/:$//')
+  t=$(echo $line | awk '{print $2}')
+  c=$(echo $line | awk '{print $3}')
+  if [ ! -e "$c" ]; then
+    echo "--> ERROR: into $f the certificate $t file doesn't exist: $c"
+    ssl_err=1
+  fi
+  done
+  #echo ssl_err=$ssl_err
+  # to avoid apache from starting, disable ssl module if certs files doesn't exist
+  if [ "$ssl_err" = "1" ]; then
+    echo "--> WARNING: disabling mod_ssl module because one or more certs files doesn't exist... please fix it"
+    #grep -r "^LoadModule ssl_module" ${HTTPD_CONF_DIR} | awk -F: '{print $1}' | while read file ; do sed 's/^LoadModule ssl_module/#LoadModule ssl_module/' -i $file ; done
+    sed "s/^LoadModule ssl_module/#LoadModule ssl_module/" -i "${HTTPD_CONF_DIR}/httpd.conf"
+  fi
+  }
 fi
+
 
 # load php modules (used by php-fpm also)
 if [ "$PHP_ENABLED" = "true" ]; then
@@ -64,34 +94,6 @@ if [ "$PHP_ENABLED" = "true" ]; then
       for MODULE in ${PHP_MODULES_ENABLED} ; do echo "--> Enabling PHP module: $MODULE" ; docker-php-ext-enable $MODULE ; done
   fi
 fi
-
-# enable mod_ssl
-if [ "${HTTPD_MOD_SSL}" = "true" ]; then
-  echo "--> INFO: enabling mod_ssl module because: HTTPD_MOD_SSL=${HTTPD_MOD_SSL}"
-  sed "s/^#LoadModule ssl_module/LoadModule ssl_module/" -i "${HTTPD_CONF_DIR}/httpd.conf"
-fi
-
-# Verify if SSL Files Exist otherwise disable mod_ssl
-#set -x
-grep -H -r "^.*SSLCertificate.*File " ${HTTPD_CONF_DIR}/*.d/*.conf |
-{
-while read line; do 
-f=$(echo $line | awk '{print $1}' | sed 's/:$//')
-t=$(echo $line | awk '{print $2}')
-c=$(echo $line | awk '{print $3}')
-if [ ! -e "$c" ]; then
-  echo "--> ERROR: into $f the certificate $t file doesn't exist: $c"
-  ssl_err=1
-fi
-done
-#echo ssl_err=$ssl_err
-# to avoid apache from starting, disable ssl module if certs files doesn't exist
-if [ "$ssl_err" = "1" ]; then
-  echo "--> WARNING: disabling mod_ssl module because one or more certs files doesn't exist... please fix it"
-  #grep -r "^LoadModule ssl_module" ${HTTPD_CONF_DIR} | awk -F: '{print $1}' | while read file ; do sed 's/^LoadModule ssl_module/#LoadModule ssl_module/' -i $file ; done
-  sed "s/^LoadModule ssl_module/#LoadModule ssl_module/" -i "${HTTPD_CONF_DIR}/httpd.conf"
-fi
-}
 
 
 # SMTP variables

@@ -63,4 +63,4 @@ ADD Dockerfile /
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "php-fpm"]
 
-ENV APP_VER "7.2.9-29"
+ENV APP_VER "5.6.38-16"

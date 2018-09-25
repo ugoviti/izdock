@@ -2,7 +2,8 @@
 Production ready [ProxySQL](http://www.proxysql.com/) image based on Debian 9 (stretch) Slim
 
 # Supported tags
--	`1.4.10-BUILD`, `1.4.10`, `1.4`, `1`, `latest`
+-	`1.4.11-BUILD`, `1.4.11`, `1.4`, `1`, `latest`
+-	`1.4.10-BUILD`, `1.4.10`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
 
