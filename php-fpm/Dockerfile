@@ -1,4 +1,8 @@
-ARG image_from="izdock/httpd:2.4.34-php-7.2.9"
+ARG image_from="izdock/httpd:php7.2"
+
+#FROM ${image_from_httpd} as httpd
+#RUN rm -rf /usr/local/apache2/ /local/php/bin/phpdbg
+
 FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
@@ -9,8 +13,8 @@ ENV HTTPD_ENABLED false
 ENV PHP_ENABLED   true
 
 ENV PHP_PREFIX /usr/local/php
-
-RUN rm -rf /usr/local/apache2/ 
+ 
+#COPY --from=httpd / /
 
 WORKDIR /var/www/html
 
@@ -19,7 +23,8 @@ RUN set -ex \
   #&& cd /etc \
   #&& ln -s ${PHP_PREFIX}/etc/php/php-fpm.conf \
   #&& ln -s ${PHP_PREFIX}/etc/php/php-fpm.d \
-	&& cd ${PHP_PREFIX}/etc/php \
+  #&& mkdir -p ${PHP_PREFIX}/etc/php \
+  && cd ${PHP_PREFIX}/etc/php \
 	&& if [ -d php-fpm.d ]; then \
 		# for some reason, upstream's php-fpm.conf.default has "include=NONE/etc/php-fpm.d/*.conf"
 		sed 's!=NONE/!=!g' php-fpm.conf.default | tee php-fpm.conf > /dev/null; \
@@ -57,10 +62,10 @@ RUN set -ex \
 EXPOSE 9000
 
 # add files to container
-ADD Dockerfile /
+COPY Dockerfile /
 
 # entrypoint
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "php-fpm"]
 
-ENV APP_VER "5.6.38-16"
+ENV APP_VER "7.1.22-63"

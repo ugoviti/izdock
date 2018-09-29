@@ -10,7 +10,7 @@ ENV APP_NAME "proxysql"
 # default versions
 ARG tag_ver_major=1
 ARG tag_ver_minor=4
-ARG tag_ver_patch=11
+ARG tag_ver_patch=12
 ARG tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
 
 ENV PROXYSQL_VERSION=${tag_ver}
@@ -48,4 +48,4 @@ VOLUME ["/var/lib/proxysql"]
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["proxysql", "-f"]
 
-ENV APP_VER "1.4.11-15"
+ENV APP_VER "1.4.12-17"

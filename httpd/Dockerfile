@@ -1,5 +1,5 @@
 ARG image_from=alpine:3.7
-ARG image_from_httpd=httpd:2.4.34-alpine
+ARG image_from_httpd=httpd:2.4.35-alpine
 #ARG image_from_php=php:7.1.20-alpine
 #ARG image_from_v8=alexmasterov/alpine-libv8:6.7
 
@@ -9,11 +9,9 @@ FROM ${image_from_httpd} as httpd
 FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
-
 ENV APP_NAME httpd
 
-ARG HTTPD_VERSION=2.4.34
-ARG HTTPD_SHA256=fa53c95631febb08a9de41fd2864cfff815cf62d9306723ab0d4b8d7aa1638f0
+ARG HTTPD_VERSION=2.4.35
 
 ARG PHP_VERSION=7.2.10
 ARG PHP_SHA256=01c2154a3a8e3c0818acbdbc1a956832c828a0380ce6d1d14fea495ea21804f0
@@ -38,7 +36,7 @@ ARG DOCUMENTROOT=/var/www/localhost/htdocs
 
 ## php modules extra
 # https://github.com/Whissi/realpath_turbo
-ARG REALPATH_TURBO_VERSION=2.0.0
+ARG REALPATHTURBO_VERSION=2.0.0
 
 # https://github.com/xdebug/xdebug
 ARG XDEBUG_VERSION=2.6.1
@@ -367,60 +365,56 @@ RUN set -xe \
       | sort -u \
 	)" \
   && apk add --virtual .php-runtime-dependencies ${runtimeDeps} \
-  && : "---------- Realpath Turbo - https://bugs.php.net/bug.php?id=52312 ----------" \
-  && git clone -o v${REALPATH_TURBO_VERSION} --depth 1 https://github.com/Whissi/realpath_turbo.git /usr/src/realpath_turbo \
-  && cd /usr/src/realpath_turbo \
+  && : "---------- realpathturbo - https://bugs.php.net/bug.php?id=52312 ----------" \
+  && curl -fSL --connect-timeout 30 "https://github.com/Whissi/realpath_turbo/archive/v${REALPATHTURBO_VERSION}.tar.gz" | tar xz -C /usr/src/ \
+  && cd /usr/src/realpath_turbo-${REALPATHTURBO_VERSION} \
   && phpize \
   && ./configure \
   && make \
   && make install \
-  && : "---------- xDebug ----------" \
-  && git clone -o ${XDEBUG_VERSION} --depth 1 https://github.com/xdebug/xdebug.git /usr/src/xdebug \
-  && cd /usr/src/xdebug \
+  && : "---------- xdebug ----------" \
+  && curl -fSL --connect-timeout 30 "https://github.com/xdebug/xdebug/archive/${XDEBUG_VERSION}.tar.gz" | tar xz -C /usr/src/ \
+  && cd /usr/src/xdebug-${XDEBUG_VERSION} \
   && phpize \
   && ./configure \
   && make \
   && make install \
-  && : "---------- Msgpack ----------" \
-  && git clone -o msgpack-${MSGPACK_VERSION} --depth 1 https://github.com/msgpack/msgpack-php.git /usr/src/msgpack-php \
-  && cd /usr/src/msgpack-php \
+  && : "---------- msgpack ----------" \
+  && curl -fSL --connect-timeout 30 "https://github.com/msgpack/msgpack-php/archive/msgpack-${MSGPACK_VERSION}.tar.gz" | tar xz -C /usr/src/ \
+  && cd /usr/src/msgpack-php-msgpack-${MSGPACK_VERSION} \
   && phpize \
   && ./configure \
   && make \
   && make install \
-  && : "---------- Memcached ----------" \
-  && MEMCACHED_FILENAME="php-memcached-${MEMCACHED_VERSION}" \
-  && MEMCACHED_SOURCE="https://github.com/php-memcached-dev/php-memcached/archive/v${MEMCACHED_VERSION}.tar.gz" \
-  && curl -fSL --connect-timeout 30 ${MEMCACHED_SOURCE} | tar xz -C /usr/src/ \
-  && cd /usr/src/${MEMCACHED_FILENAME} \
+  && : "---------- memcached ----------" \
+  && curl -fSL --connect-timeout 30 "https://github.com/php-memcached-dev/php-memcached/archive/v${MEMCACHED_VERSION}.tar.gz" | tar xz -C /usr/src/ \
+  && cd /usr/src/php-memcached-${MEMCACHED_VERSION} \
   && phpize \
   && ./configure \
   && make \
   && make install \
-  && : "---------- Redis ----------" \
-  && git clone -o ${REDIS_VERSION} --depth 1 https://github.com/phpredis/phpredis.git /usr/src/redis \
-  && cd /usr/src/redis \
+  && : "---------- phpredis ----------" \
+  && curl -fSL --connect-timeout 30 https://github.com/phpredis/phpredis/archive/${REDIS_VERSION}.tar.gz | tar xz -C /usr/src/ \
+  && cd /usr/src/phpredis-${REDIS_VERSION} \
   && phpize \
   && ./configure \
   && make \
   && make install \
-  && : "---------- Phpiredis ----------" \
+  && : "---------- phpiredis ----------" \
   && : "---------- https://blog.remirepo.net/post/2016/11/13/Redis-from-PHP ----------" \
   && apk add --virtual .phpiredis-build-dependencies hiredis-dev \
   && apk add --virtual .phpiredis-runtime-dependencies hiredis \
-  && git clone -o v${PHPIREDIS_VERSION} --depth 1 https://github.com/nrk/phpiredis.git /usr/src/phpiredis \
-  && cd /usr/src/phpiredis \
+  && curl -fSL --connect-timeout 30 https://github.com/nrk/phpiredis/archive/v${PHPIREDIS_VERSION}.tar.gz | tar xz -C /usr/src/ \
+  && cd /usr/src/phpiredis-${PHPIREDIS_VERSION} \
   && phpize \
   && ./configure \
   && make \
   && make install \
   && apk del .phpiredis-build-dependencies \
-  && : "---------- Tarantool ----------" \
+  && : "---------- tarantool ----------" \
   && apk add --virtual .tarantool-runtime-dependencies libltdl \
-  && TARANTOOL_FILENAME="tarantool-php-${TARANTOOL_VERSION}" \
-  && TARANTOOL_SOURCE="https://github.com/tarantool/tarantool-php/archive/${TARANTOOL_VERSION}.tar.gz" \
-  && curl -fSL --connect-timeout 30 ${TARANTOOL_SOURCE} | tar xz -C /usr/src/ \
-  && cd /usr/src/${TARANTOOL_FILENAME} \
+  && curl -fSL --connect-timeout 30 "https://github.com/tarantool/tarantool-php/archive/${TARANTOOL_VERSION}.tar.gz" | tar xz -C /usr/src/ \
+  && cd /usr/src/tarantool-php-${TARANTOOL_VERSION} \
   && phpize \
   && ./configure \
   && make \
@@ -493,4 +487,4 @@ EXPOSE 80 443 9000
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.34-php5.6.38-65"
+ENV APP_VER "2.4.35-php5.6.38-69"

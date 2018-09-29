@@ -1,6 +1,4 @@
-
-
-build=31
+build=37
 
 image_from="izdock/httpd:php7.2"
 
