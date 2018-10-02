@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+set -eu
+
+: ${OSYNC_CONF:="/etc/osync.conf"}
+: ${TARGET_NODE:=0}
+
+: ${cfgfile:="$OSYNC_CONF"}
+#: ${cfgfile:="/etc/osync-target-helper.conf"}
+
+daemon=osync
+pidfile="/run/$daemon.pid"
+command="/usr/local/osync/osync.sh"
+if [ $TARGET_NODE = 1 ]; then
+  command_opts="--on-changes-target"
+ else
+  command_opts="--on-changes"
+fi
+# Check if command is executable or not
+test -x ${command} || exit 0
+
+#trap "pkill -SIGHUP runsvdir" SIGTERM SIGINT
+
+echo "Starting '${command}' with PID: $$"
+
+exec ${command} $cfgfile $command_opts

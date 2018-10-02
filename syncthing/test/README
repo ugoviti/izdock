@@ -1,0 +1,61 @@
+1. prelevare id manager
+2. collegare tcp://wms-manager
+3. accettare richiesta
+
+
+
+# elenca tutti i deviceID
+curl -s -X GET -H "X-API-Key: izsync" http://172.17.0.2:8384/rest/system/config | jq -r .devices[].deviceID
+
+
+# prelevo l'id remoto
+apiKey="izsync"
+
+remoteHost="wms-manager"
+remoteIP="172.17.0.2"
+
+# tmp
+echo "172.17.0.2 wms-manager" >> /etc/hosts
+
+localHost="$(hostname)"
+localIP="$(hostname -i)"
+
+
+
+
+echo wms-manager | sha224sum | awk '{print $1}' | tr [:lower:] [:upper:] | fold -w7 | paste -sd'-' -
+
+function stGetSystemConfig {
+  curl -s -X GET -H "X-API-Key: $apiKey" http://$1:8384/rest/system/config
+}
+
+function stSaveSystemConfig {
+  [ -t 0 ] && echo "stdin is empty" && return 1
+  curl -s -X POST -H "X-API-Key: $apiKey" -H "Content-Type: application/json" http://$1:8384/rest/system/config -d @-
+}
+
+function stGetSystemStatus {
+  curl -s -X GET -H "X-API-Key: $apiKey" http://$1:8384/rest/system/status
+}
+
+# prelevo l'id remoto
+remoteID=$(stGetSystemStatus $remoteHost | jq -rc .myID)
+
+# prelevo il mio id
+myID=$(stGetSystemStatus $localHost | jq -rc .myID)
+
+
+# aggiungo il mio device all'elenco dei devices connessi nell'host remoto
+stGetSystemConfig $remoteHost | jq --arg deviceID "$myID" --arg name "$localHost" --arg deviceIP "$localIP" '.devices[.devices|length] += {"deviceID":$deviceID,"name":$name,"addresses":["dynamic",$name,("tcp://"+$deviceIP)],"autoAcceptFolders": true,} | .folders[].devices += [{"deviceID":$deviceID}]' | stSaveSystemConfig $remoteHost
+
+
+# aggiungo l'host remoto ai device connessi nell'host locale
+stGetSystemConfig $localHost | jq --arg deviceID "$remoteID" --arg name "$remoteHost" --arg deviceIP "$remoteIP" '.devices[.devices|length] += {"deviceID":$deviceID,"name":$name,"addresses":["dynamic",$name,("tcp://"+$deviceIP)],"autoAcceptFolders": true,} | .folders[].devices += [{"deviceID":$deviceID}]' | stSaveSystemConfig $localHost
+
+
+
+
+
+
+
+

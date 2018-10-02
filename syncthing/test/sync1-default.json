@@ -1,0 +1,126 @@
+{
+  "version": 28,
+  "folders": [
+    {
+      "id": "data",
+      "label": "data",
+      "filesystemType": "basic",
+      "path": "/data",
+      "type": "sendreceive",
+      "devices": [
+        {
+          "deviceID": "3PRCMEF-HOVCCCK-W5YEKCY-XLNIRHD-WSMOJQF-NONPEPG-4DWDGA3-5JWUZQZ",
+          "introducedBy": ""
+        }
+      ],
+      "rescanIntervalS": 3600,
+      "fsWatcherEnabled": true,
+      "fsWatcherDelayS": 10,
+      "ignorePerms": false,
+      "autoNormalize": true,
+      "minDiskFree": {
+        "value": 0,
+        "unit": ""
+      },
+      "versioning": {
+        "type": "",
+        "params": {}
+      },
+      "copiers": 0,
+      "pullerMaxPendingKiB": 0,
+      "hashers": 0,
+      "order": "random",
+      "ignoreDelete": false,
+      "scanProgressIntervalS": 0,
+      "pullerPauseS": 0,
+      "maxConflicts": 0,
+      "disableSparseFiles": false,
+      "disableTempIndexes": false,
+      "paused": false,
+      "weakHashThresholdPct": 25,
+      "markerName": ".stfolder",
+      "useLargeBlocks": false
+    }
+  ],
+  "devices": [
+    {
+      "deviceID": "3PRCMEF-HOVCCCK-W5YEKCY-XLNIRHD-WSMOJQF-NONPEPG-4DWDGA3-5JWUZQZ",
+      "name": "d8db99367a48",
+      "addresses": [
+        "dynamic"
+      ],
+      "compression": "metadata",
+      "certName": "",
+      "introducer": false,
+      "skipIntroductionRemovals": false,
+      "introducedBy": "",
+      "paused": false,
+      "allowedNetworks": [],
+      "autoAcceptFolders": false,
+      "maxSendKbps": 0,
+      "maxRecvKbps": 0
+    }
+  ],
+  "gui": {
+    "enabled": true,
+    "address": "0.0.0.0:8384",
+    "user": "admin",
+    "password": "$2a$10$cwYNkExpN0wjHXqsjlz4L.Q.SWeKYDfRr3CfB5HYyxVy6eBvEmlbu",
+    "useTLS": false,
+    "apiKey": "izsync",
+    "insecureAdminAccess": false,
+    "theme": "default",
+    "debugging": false,
+    "insecureSkipHostcheck": false,
+    "insecureAllowFrameLoading": false
+  },
+  "options": {
+    "listenAddresses": [
+      "default"
+    ],
+    "globalAnnounceServers": [
+      "default"
+    ],
+    "globalAnnounceEnabled": false,
+    "localAnnounceEnabled": false,
+    "localAnnouncePort": 21027,
+    "localAnnounceMCAddr": "[ff12::8384]:21027",
+    "maxSendKbps": 0,
+    "maxRecvKbps": 0,
+    "reconnectionIntervalS": 10,
+    "relaysEnabled": false,
+    "relayReconnectIntervalM": 10,
+    "startBrowser": false,
+    "natEnabled": false,
+    "natLeaseMinutes": 60,
+    "natRenewalMinutes": 30,
+    "natTimeoutSeconds": 10,
+    "urAccepted": -1,
+    "urSeen": 0,
+    "urUniqueId": "NCSmG9Du",
+    "urURL": "https://data.syncthing.net/newdata",
+    "urPostInsecurely": false,
+    "urInitialDelayS": 1800,
+    "restartOnWakeup": true,
+    "autoUpgradeIntervalH": 0,
+    "upgradeToPreReleases": false,
+    "keepTemporariesH": 24,
+    "cacheIgnoredFiles": false,
+    "progressUpdateIntervalS": 5,
+    "limitBandwidthInLan": false,
+    "minHomeDiskFree": {
+      "value": 1,
+      "unit": "%"
+    },
+    "releasesURL": "https://upgrades.syncthing.net/meta.json",
+    "alwaysLocalNets": [],
+    "overwriteRemoteDeviceNamesOnConnect": false,
+    "tempIndexMinBlocks": 10,
+    "unackedNotificationIDs": [],
+    "trafficClass": 0,
+    "defaultFolderPath": "/data",
+    "setLowPriority": true
+  },
+  "ignoredDevices": [],
+  "ignoredFolders": []
+}

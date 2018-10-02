@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+daemon=chpst
+command="/sbin/chpst"
+pidfile="/run/$daemon.pid"
+
+echo "Starting '${command}' with PID: $$"
+
+exec ${command} -U nobody socklog unix /dev/log

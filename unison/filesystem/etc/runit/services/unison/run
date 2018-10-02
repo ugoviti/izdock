@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+set -eu
+
+: ${cfgfile:="/etc/osync.conf"}
+
+daemon=osync
+command="/usr/local/osync/osync.sh"
+
+pidfile="/run/$daemon.pid"
+
+# Check if command is executable or not
+test -x ${command} || exit 0
+
+#trap "pkill -SIGHUP runsvdir" SIGTERM SIGINT
+
+echo "Starting '${command}' with PID: $$"
+
+exec ${command} $cfgfile --on-changes
