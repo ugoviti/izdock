@@ -1,69 +1,78 @@
-#!/bin/sh
+#!/bin/bash
+# Syncthing docker image for Kubernetes PODs running izdock/syncthing images
 # written by Ugo Viti <ugo.viti@initzero.it>
-# 20180926
+# version: 20181007
 
-#set -ex
+set -e
 
 # entrypoint hooks
 function hooks_always {
-
 # environment variables
+: ${DEBUG:=0}
+[ $DEBUG = 1 ] && set -x
 
-: ${APP_USR:="syncthing"}
-: ${APP_GRP:="syncthing"}
-: ${ST_HOME:="/var/syncthing"}
-: ${ST_USERNAME:="admin"}
-: ${ST_PASSWORD:='$2a$10$cwYNkExpN0wjHXqsjlz4L.Q.SWeKYDfRr3CfB5HYyxVy6eBvEmlbu'}
-: ${CONFIG_DIR:="$ST_HOME/.config/syncthing"}
-: ${CONFIG:="$CONFIG_DIR/config.xml"}
-#: ${FOLDERS:="data:/data frontend:/data/frontend backend:/data/backend"}
+: ${UMASK:=0002}
+: ${APP_USR:="syncthing"} # syncthing unix user name
+: ${APP_GRP:="syncthing"} # syncthing unix group name
+: ${APP_UID:=1000} # syncthing user user id
+: ${APP_GID:=1000} # syncthing unix group id
+
 : ${FOLDERS_BASE:="/data"}
 : ${FOLDERS:=""}
-: ${APIKEY:="d3faul7S3cur3PAssw0rd"}
-: ${REMOTEHOST:=}
-: ${REMOTEIP:=}
-: ${STPORT:="8384"}
-: ${LOCALHOST:="$(hostname)"}
-: ${LOCALIP:="$(hostname -i | cut -d ' ' -f1)"}
+#: ${FOLDERS:="data:/data frontend:/data/frontend backend:/data/backend"}
 
-# test custom DEVICEID
-#: ${MAKE_DEVICEID:=1}
-#[ ${MAKE_DEVICEID} = 1 ] && : ${DEVICEID:="$(echo $LOCALHOST | sha3sum | awk '{print $1}' | tr [:lower:] [:upper:] | fold -w7 | paste -sd'-' -)"} # calc the default deviceID based on hostname
-#[ ! -z ${DEVICEID} ] && sed "s|</configuration>|<device id=\"${DEVICEID}\"></device></configuration>|" -i  ${ST_HOME}/.config/syncthing/config.xml
+: ${ST_MASTER:=0} # we are a syncthing node master or slave? (0=slave node, 1=master node) this will enable only remote disconnected device deletion
 
-# elenca tutti i deviceID
-#curl -s -X GET -H "X-API-Key: izsync" http://172.17.0.2:8384/rest/system/config | jq -r .devices[].deviceID
+: ${MYNAME:="$(hostname)"}
+: ${MYIP:=$(getent hosts $MYNAME | awk '{ print $1 ; exit }')}
 
-function stGetSystemConfig {
-  curl -s -X GET -H "X-API-Key: $APIKEY" http://$1:$STPORT/rest/system/config
+# if this is a master istance then use the same slave and ip as master variables
+if [ $ST_MASTER = 1 ]; then
+: ${MASTERNAME:="$MYNAME"} # remote syncthing hostname
+: ${MASTERIP:="$MYIP"} # remote syncthing ip
+fi
+
+: ${ST_APIKEY:="d3faul7SUPERS3cur3PAssw0rd"} # ascii api key password
+: ${ST_APIPORT:="8384"} # default tcp port number for rest api key
+: ${ST_PORT:="22000"} # default tcp port number for syncronization service
+: ${ST_USERNAME:="admin"} # syncthing gui username
+: ${ST_PASSWORD:='$2a$10$cwYNkExpN0wjHXqsjlz4L.Q.SWeKYDfRr3CfB5HYyxVy6eBvEmlbu'} # syncthing gui password (bcrypt hash)
+: ${ST_HOME:="/var/syncthing"} # syncthing home directory
+: ${ST_CONFIG_DIR:="$ST_HOME/.config/syncthing"} # syncthing configuration directory
+: ${ST_CONFIG_FILE:="$ST_CONFIG_DIR/config.xml"} # syncthing configuration file
+: ${ST_IGNOREPERM:="true"} # Ignore POSIX permission
+
+#: ${SLEEPTIME:="120"} # seconds
+#: ${DAEMON_MODE:="1"} # run as daemon? (0=no, 1=yes)
+
+function log {
+  echo "$(date +"[%Y/%m/%d %H:%M:%S]")"
 }
 
-function stSaveSystemConfig {
-  [ -t 0 ] && echo "stdin is empty" && return 1
-  curl -s -X POST -H "X-API-Key: $APIKEY" -H "Content-Type: application/json" http://$1:$STPORT/rest/system/config -d @-
-}
-
-function stGetSystemStatus {
-  curl -s -X GET -H "X-API-Key: $APIKEY" http://$1:$STPORT/rest/system/status
+function stMakeEnv {
+  addgroup -g $APP_GID -S $APP_USR
+  adduser -u $APP_UID -D -S -h $ST_HOME -G $APP_GRP $APP_USR
+  mkdir -p ${ST_HOME}/.config/syncthing/
+  chown -R ${APP_USR}:${APP_GRP} ${ST_HOME}
 }
 
 function stMakeDefaultConfig {
-  echo "--> Generating default Syncthing certificates into: ${CONFIG_DIR}"
+  echo "--> Generating default Syncthing Certificates into: ${ST_CONFIG_DIR}"
   # make syncthing directory if not exist
-  [ ! -e "${CONFIG_DIR}" ] && install -m770 -o ${APP_USR} -g ${APP_GRP} -d "${CONFIG_DIR}"
-  [ ! -w "${CONFIG_DIR}" ] && chown -R ${APP_USR}:${APP_GRP} "${CONFIG_DIR}"
-  su-exec ${APP_USR} syncthing -generate="${CONFIG_DIR}"
+  [ ! -e "${ST_CONFIG_DIR}" ] && install -m770 -o ${APP_USR} -g ${APP_GRP} -d "${ST_CONFIG_DIR}"
+  [ ! -w "${ST_CONFIG_DIR}" ] && chown -R ${APP_USR}:${APP_GRP} "${ST_CONFIG_DIR}"
+  su-exec ${APP_USR} syncthing -generate="${ST_CONFIG_DIR}"
   # removing default config file becase later we will generate a minimal config
-  rm -f "${CONFIG}"
+  rm -f "${ST_CONFIG_FILE}"
 }
 
 # write local minimal default config
 function stMakeMinimalConfig {
   echo "<configuration version=\"28\">
       <gui enabled=\"true\" tls=\"false\" debugging=\"false\">
-          <address>0.0.0.0:8384</address>
+          <address>0.0.0.0:${ST_APIPORT}</address>
           <theme>default</theme>
-          <apikey>${APIKEY}</apikey>
+          <apikey>${ST_APIKEY}</apikey>
           <user>${ST_USERNAME}</user>
           <password>${ST_PASSWORD}</password>
       </gui>
@@ -89,82 +98,77 @@ function stMakeMinimalConfig {
     FOLDER_PATH="$(echo $FOLDER | awk -F: '{print $2}')"
 
     # make the folder with the right permissions if not exist
-    [ ! -e "${FOLDER_PATH}" ] && install -m770 -o ${APP_USR} -g ${APP_GRP} -d "${FOLDER_PATH}"
-    # dangerous
-    #[ ! -w "${FOLDER_PATH}" ] && chown -R ${APP_USR}:${APP_GRP} "${FOLDER_PATH}"
-
-    echo "<folder id=\"$FOLDER_NAME\" label=\"$FOLDER_NAME\" path=\"$FOLDER_PATH\" type=\"sendreceive\" rescanIntervalS=\"3600\" fsWatcherEnabled=\"true\" fsWatcherDelayS=\"10\" ignorePerms=\"false\" autoNormalize=\"true\">"
-    [ ! -z "$REMOTEID" ] && echo "<device id=\"$REMOTEID\" introducedBy=\"\"></device>"
-    echo "</folder>"
+    #[ ! -e "${FOLDER_PATH}" ] && install -m2775 -o ${APP_USR} -g ${APP_GRP} -d "${FOLDER_PATH}"
+    # allow syncthing user to own the testination folder
+    #[ ! -w "${FOLDER_PATH}" ] && chown ${APP_USR}:${APP_GRP} "${FOLDER_PATH}"
+    # always set the default permissions
+    install -m2775 -o ${APP_USR} -g ${APP_GRP} -d "${FOLDER_PATH}"
+    # dont't share local folder if we are not the master node
+    if [ $ST_MASTER = 1 ]; then
+      echo "<folder id=\"$FOLDER_NAME\" label=\"$FOLDER_NAME\" path=\"$FOLDER_PATH\" type=\"sendreceive\" rescanIntervalS=\"3600\" fsWatcherEnabled=\"true\" fsWatcherDelayS=\"10\" ignorePerms=\"$ST_IGNOREPERM\" autoNormalize=\"true\">"
+      echo "</folder>"
+    fi
   done
-
-  if [ ! -z "$REMOTEID" ]; then
-  echo "<device id=\"$REMOTEID\" name=\"$REMOTEHOST\" compression=\"metadata\" introducer=\"false\" skipIntroductionRemovals=\"false\" introducedBy=\"\">
-          <address>tcp://$REMOTEHOST</address>
-          <autoAcceptFolders>false</autoAcceptFolders>
-      </device>"
-  fi
-
   echo "</configuration>"
 }
 
-# generate a Default certs if not exist
-[ ! -e "${CONFIG}" ] && stMakeDefaultConfig
-#MYID=$(stGetSystemStatus $LOCALHOST | jq -rc .myID)
-MYID="$(su-exec ${APP_USR} syncthing -device-id)"
+# create the user and home directory
+umask $UMASK
+stMakeEnv
 
-# get remote cluster master deviceID
-if [[ ! -z "${REMOTEIP}" && ! -z "${REMOTEHOST}" ]]; then
-  # TMP DOCKER ONLY: dns missing of cluster master
-  echo "$REMOTEIP $REMOTEHOST" >> /etc/hosts
-  set -x
-  REMOTEID="$(stGetSystemStatus $REMOTEHOST | jq -rc .myID)"
-  set +x
-fi
+# generate a Default certs if not exist
+[ ! -e "${ST_CONFIG_FILE}" ] && stMakeDefaultConfig
 
 # generate a minimal config.xml if not exist
-if [ ! -e "${CONFIG}" ]; then
-  echo "--> Generating minimal Syncthing config into: ${CONFIG}"
+if [ ! -e "${ST_CONFIG_FILE}" ]; then
+  echo "--> Generating minimal Syncthing config into: ${ST_CONFIG_FILE}"
   for FOLDER in $FOLDERS ; do
     FOLDER_NAME="$(echo $FOLDER | awk -F: '{print $1}')"
     FOLDER_PATH="$(echo $FOLDER | awk -F: '{print $2}')"
     echo "---> Sharing folder: name:[$FOLDER_NAME] path:[$FOLDER_PATH]"
+    # make the folder with the right permissions if not exist
+    [ ! -e "${FOLDER_PATH}" ] && echo "---> Folder path $FOLDER_PATH doesn't exist, creating it..." && install -m770 -o ${APP_USR} -g ${APP_GRP} -d "${FOLDER_PATH}"
   done
-  stMakeMinimalConfig >"$CONFIG"
-  chown $APP_USR:$APP_GRP "$CONFIG"
-  chmod 640 "$CONFIG"
+  stMakeMinimalConfig >"$ST_CONFIG_FILE"
+  chown $APP_USR:$APP_GRP "$ST_CONFIG_FILE"
+  chmod 640 "$ST_CONFIG_FILE"
  else
-  echo "--> Using already existing Syncthing config file from: ${CONFIG}"
+  echo "--> Using already existing Syncthing config file from: ${ST_CONFIG_FILE}"
 fi
 
-# configure and connect local server to the cluster master server
-if [[ ! -z "${REMOTEIP}" && ! -z "${REMOTEHOST}" ]]; then
-  echo "--> Configuring Syncthing sharing with cluster master server: ${REMOTEHOST} / ${REMOTEIP}"
-
-  # register ourself into syncthing cluster muster
-  echo "--->  Local ID: $MYID"
-  echo "---> Master ID: $REMOTEID"
-
-  stGetSystemConfig $REMOTEHOST | jq --arg deviceID "$MYID" --arg name "$LOCALHOST" '.devices[.devices|length] += {"deviceID":$deviceID,"name":$name,"addresses":["tcp://"+$name+":22000"],"autoAcceptFolders": false,} | .folders[].devices += [{"deviceID":$deviceID}]' | stSaveSystemConfig $REMOTEHOST
-
-  # with ip
-  #stGetSystemConfig $REMOTEHOST | jq --arg deviceID "$MYID" --arg name "$LOCALHOST" --arg deviceIP "$LOCALIP" ' \
-  #.devices[.devices|length] += {"deviceID":$deviceID,"name":$name,"addresses":["dynamic","tcp://"+$name+":22000",("tcp://"+$deviceIP+":22000")],"autoAcceptFolders": false,} | \
-  #.folders[].devices += [{"deviceID":$deviceID}]' \
-  #| stSaveSystemConfig $REMOTEHOST
-
-  # aggiungo l'host remoto ai device connessi nell'host locale FIXARE viene eseguito prima di partire quindi non serve a nulla
-  # test 1
-  #stGetSystemConfig $LOCALHOST | jq --arg deviceID "$REMOTEID" --arg name "$REMOTEHOST" --arg deviceIP "$REMOTEIP" '.devices[.devices|length] += {"deviceID":$deviceID,"name":$name,"addresses":["dynamic",$name,("tcp://"+$deviceIP)],"autoAcceptFolders": true,} | .folders[].devices += [{"deviceID":$deviceID}]' | stSaveSystemConfig $LOCALHOST
-  # test 2
-  #cat $ST_HOME/.config/syncthing/config.xml | xq .configuration | jq --arg deviceID "$REMOTEID" --arg name "$REMOTEHOST" --arg deviceIP "$REMOTEIP" '.devices[.devices|length] += {"deviceID":$deviceID,"name":$name,"addresses":["dynamic",$name,("tcp://"+$deviceIP)],"autoAcceptFolders": true,} | .folders[0].devices += [{"deviceID":$deviceID}]' | xq -x . $CONFIG
+if [ $DEBUG = 1 ]; then
+echo "--> Generated configuration file: ${ST_CONFIG_FILE}"
+echo "------------------------------------------------------------------------"
+cat "${ST_CONFIG_FILE}"
+echo "------------------------------------------------------------------------"
 fi
 
-echo "--> Displaying configuration file: ${CONFIG}"
-echo "----------------------------------------------------------------------------------------------------"
-cat "${CONFIG}"
-echo "----------------------------------------------------------------------------------------------------"
+echo "$(log) Initizializing izSync Syncthing..."
+echo "--> Configuring default options..."
+if [ $ST_MASTER = 0 ]; then
+  echo "---> Node Role: SLAVE"
+  echo "---> HOSTNAME=$MYNAME"
+  echo "---> IP=$MYIP"
+else
+  echo "---> Node Role: MASTER"
+  echo "---> HOSTNAME=$MASTERNAME"
+  echo "---> IP=$MASTERIP"
+fi
+echo "---> FOLDERS_BASE=$FOLDERS_BASE"
+echo "---> FOLDERS=$FOLDERS"
+
 }
 
 hooks_always
+
+
+# testing commands
+
+## master node
+# s=0 ; docker rm master${s} ; docker run -it -p ${s}8384:8384 -v /tmp/master${s}/data:/data --name master${s} --hostname master${s} -e ST_APIKEY=izsync -e FOLDERS="frontend/initzero:/data/frontend/initzero frontend/peruzzi:/data/frontend/peruzzi webservice/initzero:/data/webservice/initzero" -e APP_UID=501 -e APP_GID=501 -e ST_MASTER=1 -e DEBUG=0 syncthing
+
+
+## slave nodes
+# s=1 ; docker rm slave${s} ; docker run -it -p ${s}8384:8384 -v /tmp/slave${s}/data:/data --name slave${s} --hostname slave${s} -e ST_APIKEY=izsync -e FOLDERS="frontend/initzero:/data/frontend/initzero" -e APP_UID=501 -e APP_GID=501 syncthing
+
 

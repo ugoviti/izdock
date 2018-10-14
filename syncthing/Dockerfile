@@ -1,23 +1,28 @@
-FROM alpine:3.8
+ARG image_from=alpine:3.8
+FROM ${image_from}
 
-ENV SYNCTHING_VERSION 0.14.50
+ARG SYNCTHING_VERSION=0.14.51
 
 # gpg: key 00654A3E: public key "Syncthing Release Management <release@syncthing.net>" imported
 ENV SYNCTHING_GPG_KEY 37C84554E7E0A261E4F76E1ED26E6ED000654A3E
 
+ENV APP_NAME=syncthing
 ENV APP_USR=syncthing
 ENV APP_GRP=syncthing
+ENV APP_UID=1000
+ENV APP_GID=1000
 ENV ST_HOME=/var/syncthing
 ENV STNOUPGRADE=0
 
 ## install
 RUN set -x \
-  && addgroup -S $APP_USR \
-  && adduser -D -S -h $ST_HOME -G $APP_USR $APP_USR \
-  && mkdir -p ${ST_HOME}/.config/syncthing/ \
-  && chown -R ${APP_USR}:${APP_USR} ${ST_HOME} \
+  #&& addgroup -g $APP_GID -S $APP_USR \
+  #&& adduser -u $APP_UID -D -S -h $ST_HOME -G $APP_GRP $APP_USR \
+  #&& mkdir -p ${ST_HOME}/.config/syncthing/ \
+  #&& chown -R ${APP_USR}:${APP_GRP} ${ST_HOME} \
   && apk upgrade --update --no-cache \
   && apk add \
+  bash \
   tini \
   libressl \
   curl \
@@ -70,6 +75,7 @@ ADD Dockerfile filesystem /
 #USER $APP_USR
 
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/entrypoint.sh", "syncthing", "-gui-address", "0.0.0.0:8384"]
+#CMD ["/entrypoint.sh", "umask 0002 ; /usr/local/bin/syncthing -gui-address 0.0.0.0:8384"]
+CMD ["/entrypoint.sh", "syncthing -gui-address 0.0.0.0:8384"]
 
-ENV APP_VER 0.14.50
+ENV APP_VER "0.14.51-9"
