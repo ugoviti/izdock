@@ -1,0 +1,12 @@
+build=13
+
+image_from="alpine:3.8"
+
+tag_latest=yes
+
+tag_ver_major=1
+tag_ver_minor=0
+tag_ver_patch=0
+
+tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
+
