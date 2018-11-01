@@ -13,15 +13,14 @@ ENV APP_NAME httpd
 
 ARG HTTPD_VERSION=2.4.35
 
-ARG PHP_VERSION=7.2.10
-ARG PHP_SHA256=01c2154a3a8e3c0818acbdbc1a956832c828a0380ce6d1d14fea495ea21804f0
+ARG PHP_VERSION=7.2.11
+ARG PHP_SHA256=da1a705c0bc46410e330fc6baa967666c8cd2985378fb9707c01a8e33b01d985
 
 ARG PREFIX=/usr/local
 ARG HTTPD_PREFIX=${PREFIX}/apache2
 ARG PHP_PREFIX=${PREFIX}/php
 ARG PHP_INI_DIR=${PHP_PREFIX}/etc/php
 ENV PATH=${PATH}:${HTTPD_PREFIX}/bin:${PHP_PREFIX}/bin:${PHP_PREFIX}/sbin
-ENV UMASK "0002"
 
 # PHP extra modules to enable
 ARG PHP_MODULES_PECL="igbinary apcu"
@@ -481,10 +480,10 @@ RUN set -xe \
 # add files to the container
 ADD Dockerfile filesystem /
 
-EXPOSE 80 443 9000
+EXPOSE 80 443
 
 # entrypoint
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.35-php5.6.38-69"
+ENV APP_VER "2.4.35-php7.2.11-77"

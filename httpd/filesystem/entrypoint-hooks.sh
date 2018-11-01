@@ -1,4 +1,6 @@
 #!/bin/sh
+# written by Ugo Viti <ugo.viti@initzero.it>
+# version: 20181020
 #set -ex
 
 # entrypoint hooks
@@ -7,6 +9,10 @@ hooks_always() {
 : ${HTTPD_ENABLED:=true}
 : ${HTTPD_MOD_SSL:=false}
 : ${PHP_ENABLED:=true}
+: ${UMASK:=0002}
+
+# set default umask
+umask $UMASK
 
 # HTTPD configuration
 if [ "$HTTPD_ENABLED" = "true" ]; then
@@ -33,7 +39,7 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
   case $HTTPD_MPM in
 	  worker|event)
 	  if echo $PHP_VERSION_ALL | grep -i nts >/dev/null; then
-      echo "--> WARNING: disabling mod_php module because default apache worker is mpm_$HTTPD_MPM and PHP is not ZTS (Thread Safe) compiled: $PHP_VERSION_ALL"
+      [ "$PHP_ENABLED" != "false" ] && echo "--> WARNING: disabling mod_php module because default apache worker is mpm_$HTTPD_MPM and PHP is not ZTS (Thread Safe) compiled: $PHP_VERSION_ALL"
       PHP_ENABLED=false
       fi
       ;;
@@ -50,7 +56,7 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
     </FilesMatch>" > ${HTTPD_CONF_DIR}/conf.d/php.conf
     [ "$PHPINFO" = "true" ] && echo "<?php phpinfo(); ?>" > ${DOCUMENTROOT}/info.php
    else
-     echo "--> WARNING: disabling mod_php module because: PHP_ENABLED=$PHP_ENABLED"
+     echo "--> INFO: disabling mod_php module because: PHP_ENABLED=$PHP_ENABLED"
      sed "s/^LoadModule php/#LoadModule php/" -i "${HTTPD_CONF_DIR}/httpd.conf"
   fi
 

@@ -68,4 +68,4 @@ COPY Dockerfile /
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "php-fpm"]
 
-ENV APP_VER "7.1.22-63"
+ENV APP_VER "7.2.11-38"
