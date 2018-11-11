@@ -1,6 +1,6 @@
-ARG image_from=alpine:3.7
-ARG image_from_httpd=httpd:2.4.35-alpine
-#ARG image_from_php=php:7.1.20-alpine
+ARG image_from=alpine:3.8
+ARG image_from_httpd=httpd:2.4.37-alpine
+#ARG image_from_php=php:7.1.24-alpine
 #ARG image_from_v8=alexmasterov/alpine-libv8:6.7
 
 FROM ${image_from_httpd} as httpd
@@ -486,4 +486,4 @@ EXPOSE 80 443
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.35-php7.2.11-77"
+ENV APP_VER "2.4.37-php7.2.11-78"
