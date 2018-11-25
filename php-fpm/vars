@@ -1,12 +1,4 @@
-build=38
+build=72
 
-image_from="izdock/httpd:php7.2"
-
-source <(grep -e "^PHP_VERSION" ../httpd/vars)
-
-tag_latest=yes
-
-tag_ver_major=${PHP_VERSION_MAJOR}
-tag_ver_minor=${PHP_VERSION_MINOR}
-tag_ver_patch=${PHP_VERSION_PATCH}
-tag_ver=${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}.${PHP_VERSION_PATCH}
+# set default php version to compile using external vars file
+[ -z "$tag_latest" ] && source $PWD/vars.php72

@@ -21,7 +21,8 @@ source $vars_file
 
 [ -z "$build" ] && build=1 || let build+=1
 # update build version
-add_replace_line "$vars_file" "build=" "build=$build"
+#add_replace_line "$vars_file" "build=" "build=$build"
+add_replace_line "$(realpath vars)" "build=" "build=$build"
 
 # import common variables
 source $PWD/../vars
