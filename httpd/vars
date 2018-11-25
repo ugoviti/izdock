@@ -1,15 +1,55 @@
-build=78
+build=129
 
-# http://php.net/downloads.php
-PHP_VERSION_MAJOR=7
-PHP_VERSION_MINOR=2
-PHP_VERSION_PATCH=11
-PHP_SHA256=da1a705c0bc46410e330fc6baa967666c8cd2985378fb9707c01a8e33b01d985
+# http://www.apache.org/dist/httpd/
+HTTPD_VERSION_MAJOR=2
+HTTPD_VERSION_MINOR=4
+HTTPD_VERSION_PATCH=35
 
-source $PWD/vars.common
+# http://php.net/downloads.php (import from external vars file)
+#PHP_VERSION_MAJOR=
+#PHP_VERSION_MINOR=
+#PHP_VERSION_PATCH=
+#PHP_SHA256=
 
-tag_latest=yes
+# set default php version to compile using external vars file
+[ -z "$tag_latest" ] && source $PWD/vars.php72
 
-tags+=" ${tag_ver_major}"
-tags+=" ${tag_ver_major}.${tag_ver_minor}"
-tags+=" ${tag_ver}"
+# internal vars
+HTTPD_VERSION=${HTTPD_VERSION_MAJOR}.${HTTPD_VERSION_MINOR}.${HTTPD_VERSION_PATCH}
+PHP_VERSION=${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}.${PHP_VERSION_PATCH}
+
+# default docker build variables
+tag_ver_major=${HTTPD_VERSION_MAJOR}
+tag_ver_minor=${HTTPD_VERSION_MINOR}
+tag_ver_patch=${HTTPD_VERSION_PATCH}
+tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
+
+# default distribution IMAGE FROM
+image_from="alpine:3.7"
+
+# extra IMAGE FROM
+image_from_httpd="httpd:${tag_ver}-alpine"
+#image_from_php="php:$PHP_VERSION-alpine"
+
+# image tags prefix/suffix
+tag_prefix=""
+tag_suffix="-php${PHP_VERSION}"
+
+# image tags for builded image
+tags=""
+tags+=" ${tag_ver_major}.${tag_ver_minor}-php${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}"
+tags+=" ${tag_ver}-php${PHP_VERSION}"
+tags+=" ${tag_ver}-php${PHP_VERSION}-${build}"
+tags+=" php${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}"
+
+# by default do not set latest tag and import from specific vars file
+#tag_latest=yes
+
+# set default major tags
+if [ "$tag_latest" = "yes" ]; then
+  tags+=" ${tag_ver_major}"
+  tags+=" ${tag_ver_major}.${tag_ver_minor}"
+  tags+=" ${tag_ver}"
+fi
+
+args="image_from=$image_from image_from_httpd=$image_from_httpd HTTPD_VERSION=$HTTPD_VERSION PHP_VERSION=$PHP_VERSION PHP_SHA256=$PHP_SHA256 "

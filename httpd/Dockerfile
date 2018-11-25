@@ -1,5 +1,5 @@
-ARG image_from=alpine:3.8
-ARG image_from_httpd=httpd:2.4.37-alpine
+ARG image_from=alpine:3.7
+ARG image_from_httpd=httpd:2.4.35-alpine
 #ARG image_from_php=php:7.1.24-alpine
 #ARG image_from_v8=alexmasterov/alpine-libv8:6.7
 
@@ -11,11 +11,40 @@ FROM ${image_from}
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
 ENV APP_NAME httpd
 
-ARG HTTPD_VERSION=2.4.35
+## apps versions
+#ARG HTTPD_VERSION=
+ARG PHP_VERSION=7.2.12
+ARG PHP_SHA256=989c04cc879ee71a5e1131db867f3c5102f1f7565f805e2bb8bde33f93147fe1
 
-ARG PHP_VERSION=7.2.11
-ARG PHP_SHA256=da1a705c0bc46410e330fc6baa967666c8cd2985378fb9707c01a8e33b01d985
+## php modules version to compile
+# https://github.com/phpredis/phpredis/releases
+ARG REDIS_VERSION=4.2.0
 
+# https://github.com/php-memcached-dev/php-memcached/releases
+ARG MEMCACHED_VERSION=3.0.4
+
+# https://github.com/Whissi/realpath_turbo
+ARG REALPATHTURBO_VERSION=2.0.0
+
+# https://github.com/xdebug/xdebug
+ARG XDEBUG_VERSION=2.6.1
+
+# https://github.com/msgpack/msgpack-php
+ARG MSGPACK_VERSION=2.0.2
+
+# https://github.com/nrk/phpiredis/releases
+ARG PHPIREDIS_VERSION=1.0.0
+
+# https://github.com/tarantool/tarantool-php/releases
+ARG TARANTOOL_VERSION=0.3.2
+
+# https://github.com/mongodb/mongo-php-driver/releases
+ENV MONGODB_VERSION=1.5.2
+
+# https://github.com/phpv8/php-v8/releases
+ARG PHPV8_VERSION=0.2.2
+
+## default variables
 ARG PREFIX=/usr/local
 ARG HTTPD_PREFIX=${PREFIX}/apache2
 ARG PHP_PREFIX=${PREFIX}/php
@@ -27,39 +56,11 @@ ARG PHP_MODULES_PECL="igbinary apcu"
 ARG PHP_MODULES_EXTRA="msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool"
 #disabled: mongodb v8
 
-ENV PHP_MODULES_ENABLED="$PHP_MODULES_PECL $PHP_MODULES_EXTRA"
+ENV PHP_MODULES_ENABLED="redis"
 # NB. do not use PHP_MODULES as variable name otherwise the build phase will fail
 
 # Apache vars
 ARG DOCUMENTROOT=/var/www/localhost/htdocs
-
-## php modules extra
-# https://github.com/Whissi/realpath_turbo
-ARG REALPATHTURBO_VERSION=2.0.0
-
-# https://github.com/xdebug/xdebug
-ARG XDEBUG_VERSION=2.6.1
-
-# https://github.com/msgpack/msgpack-php
-ARG MSGPACK_VERSION=2.0.2
-
-# https://github.com/phpredis/phpredis/releases
-ARG REDIS_VERSION=4.1.1
-
-# https://github.com/nrk/phpiredis/releases
-ARG PHPIREDIS_VERSION=1.0.0
-
-# https://github.com/tarantool/tarantool-php/releases
-ARG TARANTOOL_VERSION=0.3.2
-
-# https://github.com/mongodb/mongo-php-driver/releases
-ENV MONGODB_VERSION=1.5.2
-
-# https://github.com/phpv8/php-v8/releases 
-ARG PHPV8_VERSION=0.2.2
-
-# https://github.com/php-memcached-dev/php-memcached/releases
-ARG MEMCACHED_VERSION=3.0.4
 
 
 ## ================ ALPINE INSTALL LIBRARIES AND TOOLS ================ ##
@@ -204,7 +205,7 @@ RUN set -xe \
     zlib-dev \
     postgresql-dev \
   && : "---------- FIX: iconv - download ----------" \
-  && apk add --no-cache --virtual .ext-runtime-dependencies --repository https://dl-3.alpinelinux.org/alpine/edge/testing/ gnu-libiconv-dev \
+  && apk add --no-cache --virtual .ext-runtime-dependencies --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ gnu-libiconv-dev \
   && : "---------- FIX: iconv - replace binary and headers ----------" \
   && (mv /usr/bin/gnu-iconv /usr/bin/iconv; mv /usr/include/gnu-libiconv/*.h /usr/include; rm -rf /usr/include/gnu-libiconv) \
   \
@@ -486,4 +487,4 @@ EXPOSE 80 443
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.37-php7.2.11-78"
+ENV APP_VER "2.4.35-php7.2.12-129"
