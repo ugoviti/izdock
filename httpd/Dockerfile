@@ -39,28 +39,29 @@ ARG PHPIREDIS_VERSION=1.0.0
 ARG TARANTOOL_VERSION=0.3.2
 
 # https://github.com/mongodb/mongo-php-driver/releases
-ENV MONGODB_VERSION=1.5.2
+ARG MONGODB_VERSION=1.5.2
 
 # https://github.com/phpv8/php-v8/releases
 ARG PHPV8_VERSION=0.2.2
 
 ## default variables
-ARG PREFIX=/usr/local
-ARG HTTPD_PREFIX=${PREFIX}/apache2
-ARG PHP_PREFIX=${PREFIX}/php
-ARG PHP_INI_DIR=${PHP_PREFIX}/etc/php
+ENV PREFIX=/usr/local
+ENV HTTPD_PREFIX=${PREFIX}/apache2
+ENV PHP_PREFIX=${PREFIX}/php
+ENV PHP_INI_DIR=${PHP_PREFIX}/etc/php
 ENV PATH=${PATH}:${HTTPD_PREFIX}/bin:${PHP_PREFIX}/bin:${PHP_PREFIX}/sbin
 
 # PHP extra modules to enable
-ARG PHP_MODULES_PECL="igbinary apcu"
-ARG PHP_MODULES_EXTRA="msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool"
+ENV PHP_MODULES_PECL="igbinary apcu"
+ENV PHP_MODULES_EXTRA="msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool"
 #disabled: mongodb v8
 
+#ENV PHP_MODULES_ENABLED="all"
 ENV PHP_MODULES_ENABLED="redis"
 # NB. do not use PHP_MODULES as variable name otherwise the build phase will fail
 
 # Apache vars
-ARG DOCUMENTROOT=/var/www/localhost/htdocs
+ENV DOCUMENTROOT=/var/www/localhost/htdocs
 
 
 ## ================ ALPINE INSTALL LIBRARIES AND TOOLS ================ ##
@@ -487,4 +488,4 @@ EXPOSE 80 443
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.35-php7.2.12-129"
+ENV APP_VER "2.4.35-php5.6.38-132"

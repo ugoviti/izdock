@@ -94,6 +94,7 @@ fi
 if [ "$PHP_ENABLED" = "true" ]; then
   echo "=> INFO: configuring PHP Modules based on $(php -v| head -n1)..."
   : ${PHP_PREFIX:=/usr/local/php}
+  : ${PHP_INI_DIR:=$PHP_PREFIX/etc/php}
   if [[ "${PHP_MODULES_ENABLED}" = "all" || "${PHP_MODULES_ENABLED}" = "ALL" ]]; then 
       for MODULE in ${PHP_PREFIX}/lib/php/extensions/*/*.so; do docker-php-ext-enable $MODULE ; done \
     else
