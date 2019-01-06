@@ -2,9 +2,9 @@
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
 # Supported tags
--	`2.4.35-php7.2.12-BUILD`, `2.4.35-php7.2.12`, `2.4-php7.2`, `php7.2`, `2.4.35`, `2.4`, `2`, `latest`
--	`2.4.35-php7.1.24-BUILD`, `2.4.35-php7.1.24`, `2.4-php7.1`, `php7.1` 
--	`2.4.35-php5.6.38-BUILD`, `2.4.35-php5.6.38`, `2.4-php5.6`, `php5.6`
+-	`2.4.37-php7.2.13-BUILD`, `2.4.37-php7.2.13`, `2.4-php7.2`, `php7.2`, `2`, `2.4`, `2.4.37`, `latest`
+-	`2.4.37-php7.1.25-BUILD`, `2.4.37-php7.1.25`, `2.4-php7.1`, `php7.1` 
+-	`2.4.37-php5.6.39-BUILD`, `2.4.37-php5.6.39`, `2.4-php5.6`, `php5.6`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
 
@@ -13,10 +13,12 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 
 # Features
 - Small image footprint
-- Based on official [httpd](/_/httpd/) and [Alpine Linux 3.7](/_/alpine/) image
+- Based on official [httpd](/_/httpd/) and [Debian Slim](/_/debian/) image
 - Configurable Apache MPM Worker (use **event** or **worker** for best scalability and memory optimization, PHP get automatically disabled because is not ZTS compiled). The default Apache MPM Worker is **prefork**
 - Built from scratch PHP as NTS (Not Threat Safe) and many useful php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
 - Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts
+- Automatically generate Self Signed SSL certificates if not found into configuration to avoid apache startup problems
+- Integrated PHP-FPM support using runit service manager
 - Many customizable variables to use
 
 # What is httpd?
@@ -31,30 +33,37 @@ The Apache HTTP Server, colloquially called Apache, is a Web server application 
 
 This image only contains Apache httpd with the defaults from official httpd repository and the PHP already installed (**mod_php**) with many modules already compiled as **libphp**.
 
-# Environment variables
+# Environment default variables
 
 You can change the default behaviour using the following variables (in bold the default values):
 
 **Apache Web Server:**
-`HTTPD_ENABLED` = (**true**|false)
-`PHP_ENABLED` = (**true**|false)
-`SERVERNAME` = (**$HOSTNAME**)
-`HTTPD_CONF_DIR` = (**/etc/apache2**)
-`HTTPD_MPM` = (event|worker|**prefork**)
-`DOCUMENTROOT` = (**/var/www/localhost/htdocs**)
-`PHPINFO` = (**false**|true) # if true, then automatically create a **info.php** file into webroot
+```
+: ${MULTISERVICE:=false}          # (true|**false**) enable multiple service manager
+: ${UMASK:=0002}                  # (**0002**) default umask when creating new files
+: ${SERVERNAME:=$HOSTNAME}        # (**$HOSTNAME**) default web server hostname
+: ${HTTPD_ENABLED:=true}          # (**true**|false) # enable apache web server
+: ${HTTPD_MOD_SSL:=false}         # (true|**false**) enable apache module mod_ssl
+: ${HTTPD_CONF_DIR:=/etc/apache2} # (**/etc/apache2**) # apache config dir
+: ${HTTPD_MPM:=prefork}           # (event|worker|**prefork**) # default apache mpm worker to use
+: ${PHP_ENABLED:=true}            # (**true**|false) enable apache module mod_php 
+: ${PHPFPM_ENABLED:=false}        # (true|**false**) enable php-fpm service
+: ${PHPINFO:=false}               # (true|**false**) if true, then automatically create a **info.php** file into webroot
+: ${DOCUMENTROOT:=/var/www/localhost/htdocs} # (**directory path**) default webroot path
+```
 
 **MSMTP MTA Agent:** 
-`domain` = (**$HOSTNAME**)
-`from` = (root@localhost.localdomain)
-`host` = (**localhost**)
-`port` = (**25**)
-`tls` = (**off**)
-`starttls` = (**off**)
-`timeout` = (**3600**)
-`username` = (**empty**)
-`password` = (**empty**)
-
+```
+: ${domain:="$HOSTNAME"}                # local hostname
+: ${from:="root@localhost.localdomain"} # default From email address
+: ${host:="localhost"}                  # remote smtp server
+: ${port:=25}                           # smtp port
+: ${tls:="off"}                         # (**on**|**off**) enable tls
+: ${starttls:="off"}                    # (**on**|**off**) enable starttls
+: ${username:=""}                       # username for auth smtp server
+: ${password:=""}                       # password for auth smtp server
+: ${timeout:=3600}                      # connection timeout
+```
 
 ### Create a `Dockerfile` in your project
 

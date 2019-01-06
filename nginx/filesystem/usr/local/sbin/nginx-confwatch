@@ -5,7 +5,7 @@ NGINX_CONFWATCH="$@"
 [ -z "$NGINX_CONFWATCH" ] && echo "define a directory/file to watch" && exit 1
 
 # we need this for signal sending
-[ -z "$PID_FILE" ] && PID_FILE="/var/run/nginx/nginx.pid"
+[ -z "$PID_FILE" ] && PID_FILE="/run/nginx.pid"
 
 #set -x
 

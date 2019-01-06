@@ -1,9 +1,7 @@
-build=28
-
-image_from="nginx:1.14.0-alpine"
+build=32
 
 tag_latest=yes
 
 tag_ver_major=1
 tag_ver_minor=14
-tag_ver_patch=0
+tag_ver_patch=2

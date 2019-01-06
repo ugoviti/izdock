@@ -20,12 +20,12 @@ if [ $APP_RELINK = 1 ]; then
 [ ! -z "${APP_WORK}" ] && relink_dir "${APP_WORK_DEFAULT}" "${APP_WORK}"
 [ ! -z "${APP_SHARED}" ] && relink_dir "${APP_SHARED_DEFAULT}" "${APP_SHARED}"
 else
-  echo "Skipping APP directories relinking"
+  echo "=> Skipping APP directories relinking"
 fi
 }
 
 app_post_hooks() {
-/entrypoint-hooks.sh
+. /entrypoint-hooks.sh
 }
 
 # if required move configurations and webapps dirs to custom directory
@@ -53,5 +53,19 @@ relink_dir() {
 app_pre_hooks
 app_post_hooks
 echo "========================================================================"
-# exec entrypoint arguments
-[ ! -z "${APP_USERNAME}" ] && set -x && exec su -m ${APP_USERNAME} -s /bin/bash -c "$@" || exec "$@"
+# old: exec entrypoint arguments
+#[ ! -z "${APP_USERNAME}" ] && set -x && exec su -m ${APP_USERNAME} -s /bin/bash -c "$@" || exec "$@"
+
+# set default umask
+export UMASK
+umask $UMASK
+
+# if this container will run multiple commands, override the entry point cmd
+if [ "$MULTISERVICE" = "true" ]; then
+  set -x
+  exec runsvdir -P /etc/service
+ else
+  # exec the entry point cmd
+  set -x
+  [ ! -z "${APP_USR}" ] && exec runuser -p -u ${APP_USR} -- $@ || exec $@
+fi

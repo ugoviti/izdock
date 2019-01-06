@@ -1,6 +1,6 @@
-ARG image_from=alpine:3.7
-ARG image_from_httpd=httpd:2.4.35-alpine
-#ARG image_from_php=php:7.1.24-alpine
+ARG image_from=debian:stretch-slim
+ARG image_from_httpd=httpd:2.4.37
+#ARG image_from_php=php:7.1.24
 #ARG image_from_v8=alexmasterov/alpine-libv8:6.7
 
 FROM ${image_from_httpd} as httpd
@@ -13,8 +13,8 @@ ENV APP_NAME httpd
 
 ## apps versions
 #ARG HTTPD_VERSION=
-ARG PHP_VERSION=7.2.12
-ARG PHP_SHA256=989c04cc879ee71a5e1131db867f3c5102f1f7565f805e2bb8bde33f93147fe1
+ARG PHP_VERSION=7.2.13
+ARG PHP_SHA256=14b0429abdb46b65c843e5882c9a8c46b31dfbf279c747293b8ab950c2644a4b
 
 ## php modules version to compile
 # https://github.com/phpredis/phpredis/releases
@@ -39,17 +39,20 @@ ARG PHPIREDIS_VERSION=1.0.0
 ARG TARANTOOL_VERSION=0.3.2
 
 # https://github.com/mongodb/mongo-php-driver/releases
-ARG MONGODB_VERSION=1.5.2
+ARG MONGODB_VERSION=1.5.3
 
 # https://github.com/phpv8/php-v8/releases
 ARG PHPV8_VERSION=0.2.2
 
 ## default variables
+ENV TINI_VERSION=0.18.0
+ENV DEBIAN_FRONTEND=noninteractive
+
 ENV PREFIX=/usr/local
 ENV HTTPD_PREFIX=${PREFIX}/apache2
 ENV PHP_PREFIX=${PREFIX}/php
 ENV PHP_INI_DIR=${PHP_PREFIX}/etc/php
-ENV PATH=${PATH}:${HTTPD_PREFIX}/bin:${PHP_PREFIX}/bin:${PHP_PREFIX}/sbin
+ENV PATH=${HTTPD_PREFIX}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PHP_PREFIX}/bin:${PHP_PREFIX}/sbin
 
 # PHP extra modules to enable
 ENV PHP_MODULES_PECL="igbinary apcu"
@@ -68,69 +71,137 @@ ENV DOCUMENTROOT=/var/www/localhost/htdocs
 # install gcsfuse
 #COPY --from=gcsfuse /go/bin/gcsfuse ${PREFIX}/bin/
 
-# install apache/php needed libraries and persistent / runtime deps
-RUN set -xe \
-  && apk upgrade --update --no-cache \
-  && apk add \
-    apr \
-    apr-util \
+# prevent Debian's PHP packages from being installed
+# https://github.com/docker-library/php/pull/542
+RUN set -ex; \
+	{ \
+		echo 'Package: php*'; \
+		echo 'Pin: release *'; \
+		echo 'Pin-Priority: -1'; \
+	} > /etc/apt/preferences.d/no-debian-php
+
+## install apache/php needed libraries and persistent / runtime deps
+RUN set -ex \
+  && apt-get update && apt-get upgrade -y \
+  && apt-get install -y --no-install-recommends \
     aspell \
     bash \
+    runit \
+    procps \
+    net-tools \
+    iputils-ping \
     binutils \
+    bzip2 \
     ca-certificates \
-    c-client \
     curl \
-    cyrus-sasl \
     enchant \
-    freetype \
-    gmp \
-    icu \
-    imagemagick \    
-    imagemagick-libs \
-    libbz2 \
-    libcurl \
-    libedit \
-    libintl \
-    libjpeg-turbo \
-    libldap \
-    libmcrypt \
-    libmemcached \
-    libpng \
-    libpq \
-    libressl \
-    libsodium \
-    libssh2 \
+    file \
+    argon2 \
+    libargon2-0 \
+    fontconfig-config \
+    fonts-dejavu-core \
+    hunspell-en-us \
+    icu-devtools \
+    imagemagick \
+    intltool-debian \
+    libapr1 \
+    libaprutil1 \
+    libbsd0 \
+    libc-client2007e \
+    libcurl3 \
+    libcurl3-gnutls \
+    libedit2 \
+    libenchant1c2a \
+    libfontconfig1 \
+    libfreetype6 \
+    libgd3 \
+    libglib2.0-0 \
+    libglib2.0-data \
+    libgmp10 \
+    libgpm2 \
+    libgsasl7 \
+    libhiredis0.13 \
+    libhunspell-1.4-0 \
+    libidn2-0 \
+    libjbig0 \
+    libjpeg62-turbo \
+    libltdl7 \
+    libldb1 \
+    libtdb1 \
+    libtalloc2 \
+    libtevent0 \
+    libmagic1 \
+    libmagic-mgc \
+    libmcrypt4 \
+    libncurses5 \
+    libnghttp2-14 \
+    libntlm0 \
+    libpci3 \
+    libpcre16-3 \
+    libpcre2-16-0 \
+    libpcre2-32-0 \
+    libpcre2-8-0 \
+    libpcre2-posix0 \
+    libpcre3 \
+    libpcre32-3 \
+    libpng16-16 \
+    libpq5 \
+    libpsl5 \
+    libreadline7 \
+    librecode0 \
+    librtmp1 \
+    libsasl2-2 \
+    libsasl2-modules \
+    libsensors4 \
+    libsnmp30 \
+    libsnmp-base \
+    libsodium18 \
+    libsqlite3-0 \
+    libssh2-1 \
+    libssl1.1 \
+    libtidy5 \
+    libtiff5 \
+    libunistring0 \
+    libwebp6 \
+    libwrap0 \
+    libx11-6 \
+    libx11-data \
+    libxau6 \
+    libxcb1 \
+    libxdmcp6 \
     libxml2 \
     libxml2-utils \
-    libxslt \
-    libzip \
+    libxpm4 \
+    libxslt1.1 \
+    libzip4 \
+    mime-support \
     msmtp \
-    net-snmp \
-    nghttp2-libs \
-    pcre \
-    pcre2 \
-    libpcre16 \
-    libpcre32 \
-    libpcre2-16 \
-    libpcre2-32 \
-    pcre2-dev \
-    pcre-dev \
-    postgresql \
-    readline \
-    recode \
-    sqlite \
+    openssl \
+    psmisc \
+    publicsuffix \
+    shared-mime-info \
+    snmp \
     tar \
-    tidyhtml \
-    tidyhtml-libs \
-    tini \
-    xz \
-    zlib \
+    tcpd \
+    ucf \
+    xz-utils \
+    zlib1g \
+    libpng-tools \
+    libodbc1 \
+    webp \
+    libmemcached11 \
+#    default-mysql-client-core \
   && update-ca-certificates \
-  && addgroup -g 82 -S www-data \
-  && adduser -u 82 -S -D -h /var/cache/www-data -s /sbin/nologin -G www-data www-data \
-  # add user apache to tomcat group, used with initzero backend integration
-  && addgroup -g 91 tomcat && addgroup www-data tomcat
-
+  # install tini as init container
+  && curl -fSL --connect-timeout 30 http://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb -o tini_$TINI_VERSION-amd64.deb \
+  && dpkg -i tini_$TINI_VERSION-amd64.deb \
+  && rm -f tini_$TINI_VERSION-amd64.deb \
+#  && addgroup -g 82 -S www-data \
+#  && adduser -u 82 -S -D -h /var/cache/www-data -s /sbin/nologin -G www-data www-data \
+  # add user www-data to tomcat group, used with initzero backend integration
+  && groupadd -g 91 tomcat && gpasswd -a www-data tomcat \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/* /tmp/*
 
 ## ================ HTTPD ================ ##
 # copy some files from the official httpd image
@@ -145,82 +216,98 @@ COPY --from=httpd ${HTTPD_PREFIX} ${HTTPD_PREFIX}
 ## thanks to https://hub.docker.com/r/alexmasterov/alpine-php/
 #COPY --from=libv8 ${PREFIX}/v8 ${PREFIX}/v8
 
+# dependencies required for running "phpize"
+# (see persistent deps below)
+ENV PHPIZE_DEPS \
+		autoconf \
+		dpkg-dev \
+		file \
+		g++ \
+		gcc \
+		libc-dev \
+		make \
+		pkg-config \
+		re2c \
+    bison
+
 # compile php
-RUN set -xe \
+RUN set -ex \
+  && savedAptMark="$(apt-mark showmanual)" \
+  && apt-get update \
+	&& apt-get install -y --no-install-recommends \
+    $PHPIZE_DEPS \
+    build-essential \
+    libaprutil1-dev \
+    libargon2-0-dev \
+    libaspell-dev \
+    libapr1-dev \
+    libc-client2007e-dev \
+    libedit-dev \
+    libenchant-dev \
+    libfreetype6-dev \
+    libgcc-6-dev \
+    libgmp-dev \
+    libhiredis-dev \
+    libicu-dev \
+    libldap2-dev \
+    libltdl-dev \
+    libmcrypt-dev \
+    libnghttp2-dev \
+    libpcre3-dev \
+    libpcre2-dev \
+    libpng++-dev \
+    libpng-dev \
+    libpq-dev \
+    libreadline-dev \
+    librecode-dev \
+    libsasl2-dev \
+    libsodium-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libstdc++-6-dev \
+    libtidy-dev \
+    libxft-dev \
+    libzip-dev \
+    libldb-dev \
+    zlib1g-dev \
+    libcurl4-openssl-dev \
+#    libcurl4-gnutls-dev \
+    libxml2-dev \
+    libbison-dev \
+    libbz2-dev \
+    libwebp-dev \
+    libjpeg-dev \
+    libxpm-dev \
+    libxslt1-dev \
+    libmemcached-dev \
+#    default-libmysqlclient-dev \
+    ${PHP_EXTRA_BUILD_DEPS:-} \
   # download official php docker scripts
   && mkdir -p ${PHP_PREFIX}/bin/ \
-  && wget -q https://raw.githubusercontent.com/docker-library/php/master/docker-php-source        -O ${PHP_PREFIX}/bin/docker-php-source \
-  && wget -q https://raw.githubusercontent.com/docker-library/php/master/docker-php-ext-install   -O ${PHP_PREFIX}/bin/docker-php-ext-install \
-  && wget -q https://raw.githubusercontent.com/docker-library/php/master/docker-php-ext-enable    -O ${PHP_PREFIX}/bin/docker-php-ext-enable \
-  && wget -q https://raw.githubusercontent.com/docker-library/php/master/docker-php-ext-configure -O ${PHP_PREFIX}/bin/docker-php-ext-configure \
+  && curl -fSL --connect-timeout 30 https://raw.githubusercontent.com/docker-library/php/master/docker-php-source        -o ${PHP_PREFIX}/bin/docker-php-source \
+  && curl -fSL --connect-timeout 30 https://raw.githubusercontent.com/docker-library/php/master/docker-php-ext-install   -o ${PHP_PREFIX}/bin/docker-php-ext-install \
+  && curl -fSL --connect-timeout 30 https://raw.githubusercontent.com/docker-library/php/master/docker-php-ext-enable    -o ${PHP_PREFIX}/bin/docker-php-ext-enable \
+  && curl -fSL --connect-timeout 30 https://raw.githubusercontent.com/docker-library/php/master/docker-php-ext-configure -o ${PHP_PREFIX}/bin/docker-php-ext-configure \
   && chmod ugo+x ${PHP_PREFIX}/bin/docker-php-* \
-  && apk add --virtual .build-deps \
-    apr-dev \
-    apr-util-dev \
-    aspell-dev \
-    autoconf \
-    binutils \
-    bison \
-    build-base \
-    bzip2-dev \
-    coreutils \
-    curl-dev \
-    cyrus-sasl-dev \
-    dpkg \
-    dpkg-dev \
-    enchant-dev \
-    file \
-    freetype-dev \
-    g++ \
-    gcc \
-    git \
-    gmp-dev \
-    icu-dev \
-    imagemagick-dev \
-    imap-dev \
-    jpeg-dev \
-    libc-dev \
-    libedit-dev \
-    libjpeg-turbo-dev \
-    libmcrypt-dev \
-    libmemcached-dev \
-    libpng-dev \
-    libressl-dev \
-    libsodium-dev \
-    libssh2-dev \
-    libtool \
-    libwebp-dev \
-    libxml2-dev \
-    libxslt-dev \
-    libzip-dev \
-    make \
-    net-snmp-dev \
-    nghttp2-dev \
-    pkgconf \
-    re2c \
-    readline-dev \
-    recode-dev \
-    sqlite-dev \
-    tidyhtml-dev \
-    wget \
-    zlib-dev \
-    postgresql-dev \
-  && : "---------- FIX: iconv - download ----------" \
-  && apk add --no-cache --virtual .ext-runtime-dependencies --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ gnu-libiconv-dev \
-  && : "---------- FIX: iconv - replace binary and headers ----------" \
-  && (mv /usr/bin/gnu-iconv /usr/bin/iconv; mv /usr/include/gnu-libiconv/*.h /usr/include; rm -rf /usr/include/gnu-libiconv) \
-  \
-  && : "---------- FIX: libpcre2 ----------" \
-  && (cd /usr/lib; ln -sf libpcre2-posix.a libpcre2.a; ln -sf libpcre2-posix.so libpcre2.so) \
-  \
+  #&& : "---------- FIX: iconv - download ----------" \
+  #&& apk add --no-cache --virtual .ext-runtime-dependencies --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ gnu-libiconv-dev \
+  #&& : "---------- FIX: iconv - replace binary and headers ----------" \
+  #&& (mv /usr/bin/gnu-iconv /usr/bin/iconv; mv /usr/include/gnu-libiconv/*.h /usr/include; rm -rf /usr/include/gnu-libiconv) \
+  #\
+  #&& : "---------- FIX: libpcre2 ----------" \
+  #&& (cd /usr/lib; ln -sf libpcre2-posix.a libpcre2.a; ln -sf libpcre2-posix.so libpcre2.so) \
+  #\
   && : "---------- FIX: configuring default apache mpm worker to mpm_prefork, otherwise php get force compiled as ZTS (ThreadSafe support) if mpm_event or mpm_worker are used ----------" \
   && sed -r "s|^LoadModule mpm_|#LoadModule mpm_|i" -i "${HTTPD_PREFIX}/conf/httpd.conf" \
   && sed -r "s|^#LoadModule mpm_prefork_module|LoadModule mpm_prefork_module|i" -i "${HTTPD_PREFIX}/conf/httpd.conf" \
+  && : "---------- FIX: libcurl not working ----------" \
+  && cd /usr/include \
+  && ln -s x86_64-linux-gnu/curl \
   \
   && : "---------- PHP Build Flags ----------" \
-  && export LDFLAGS="-Wl,-O2 -Wl,--hash-style=both -pie" \
-  && export CFLAGS="-O2 -march=native -fstack-protector-strong -fpic -fpie" \
-  && export CPPFLAGS=${CFLAGS} \
+  && export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
+  && export CPPFLAGS="${CFLAGS}" \
+  && export LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" \
   && export MAKEFLAGS="-j $(expr $(getconf _NPROCESSORS_ONLN) \+ 1)" \
   \
   && : "---------- PHP Download ----------" \
@@ -228,29 +315,42 @@ RUN set -xe \
   && PHP_SOURCE="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" \
   && curl -fSL --connect-timeout 30 ${PHP_SOURCE} -o /usr/src/php.tar.xz \
 	&& echo "$PHP_SHA256 /usr/src/php.tar.xz" | sha256sum -c - \
-  && docker-php-source extract \
-  && cd /usr/src/php \
-  \
   && : "---------- PHP Build ----------" \
+  && docker-php-source extract \
   && mkdir -p ${PHP_INI_DIR}/conf.d \
+  \
+  && cd /usr/src/php \
+	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
+	&& debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)" \
   && ./configure \
+    --build="$gnuArch" \
     --prefix=${PHP_PREFIX} \
     --sysconfdir=${PHP_INI_DIR} \
     --with-config-file-path=${PHP_INI_DIR} \
     --with-config-file-scan-dir=${PHP_INI_DIR}/conf.d \
     --with-apxs2=${HTTPD_PREFIX}/bin/apxs \
+# bundled pcre does not support JIT on s390x
+# https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
+		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
+		--with-libdir="lib/$debMultiarch" \
+    #$([ $PHP_VERSION \< 7.0.0 ] \
+    #  && echo "--with-XXX" \
+    #) \
     $([ $PHP_VERSION \> 7.0.0 ] \
       && echo "--disable-phpdbg-webhelper" \
       && echo "--enable-huge-code-pages" \
       && echo "--enable-opcache-file" \
       && echo "--with-pcre-jit" \
       && echo "--with-webp-dir" \
+      && echo "--with-openssl" \
      ) \
     $([ $PHP_VERSION \< 7.2.0 ] \
       && echo "--disable-gd-native-ttf" \
      ) \
     $([ $PHP_VERSION \> 7.2.0 ] \
-      && echo "--with-sodium=/usr" \
+      && echo "--with-sodium=shared" \
+# require libargon2 >= 20161029
+#      && echo "--with-password-argon2" \
      ) \
     --disable-cgi \
     --disable-debug \
@@ -297,36 +397,38 @@ RUN set -xe \
     --enable-xml \
     --enable-xmlreader \
     --enable-xmlwriter \
-    --with-bz2=/usr \
-    --with-curl=/usr \
-    --with-enchant=/usr \
+    --with-bz2 \
+    --with-curl \
+    --with-enchant \
     --with-fpm-group=www-data \
     --with-fpm-user=www-data \
-    --with-freetype-dir=/usr \
+    --with-freetype-dir \
     --with-gd \
-    --with-iconv=/usr \
-    --with-imap \
-    --with-jpeg-dir=/usr \
-    --with-libxml-dir=/usr \
-    --with-libzip=/usr \
+    --with-iconv \
+    --with-libedit \
+    --without-imap \
+    --with-jpeg-dir \
+    --with-libxml-dir \
+    --with-libzip \
     --with-mhash \
     --with-mysqli \
-    --with-openssl=/usr \
-    --with-pcre-regex=/usr \
+    --with-pcre-regex \
     --with-pdo-mysql \
     --with-pdo-pgsql \
     --with-pdo-sqlite \
     --with-pear \
-    --with-png-dir=/usr \
-    --with-readline=/usr \
+    --with-png-dir \
+    --with-readline \
     --with-system-ciphers \
     --with-xmlrpc \
     --with-xpm-dir=no \
-    --with-xsl=/usr \
-    --with-zlib-dir=/usr \
+    --with-xsl \
+    --with-zlib \
     --without-pgsql \
+		${PHP_EXTRA_CONFIGURE_ARGS:-} \
   && make -j "$(nproc)" \
   && make install \
+	&& find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true \
   \
   # install default php.ini
   && cp -a /usr/src/php/php.ini-production ${PHP_PREFIX}/etc/php/php.ini \
@@ -345,7 +447,7 @@ RUN set -xe \
     [ "$MODULE" = memcached ] && MODULE=memcached-2.2.0 ;\
   fi ;\
   # skip these modules if php 7
-  if [[ $PHP_VERSION \< 7 ]]; then \
+  if [ $PHP_VERSION \< 7 ]; then \
    case "$MODULE" in \
      apcu|ssh2-1) echo "skipping pecl module: $MODULE" ;;\
    esac ;\
@@ -355,17 +457,19 @@ RUN set -xe \
   fi ;\
   done \
   \
-  # compile external php modules
-  && if [ $PHP_VERSION \> 7.0.0 ];then \
-  cd /usr/src \
-  && runtimeDeps="$( \
-    scanelf --needed --nobanner --recursive ${PREFIX}/sbin/php-fpm \
-      | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-      | sort -u \
-      | xargs -r apk info --installed \
-      | sort -u \
-	)" \
-  && apk add --virtual .php-runtime-dependencies ${runtimeDeps} \
+  # compile external php modules for version >5.6.0
+  && if [ $PHP_VERSION \> 5.6.0 ];then cd /usr/src \
+  && : "---------- phpredis ----------" \
+  && curl -fSL --connect-timeout 30 https://github.com/phpredis/phpredis/archive/${REDIS_VERSION}.tar.gz | tar xz -C /usr/src/ \
+  && cd /usr/src/phpredis-${REDIS_VERSION} \
+  && phpize \
+  && ./configure \
+  && make \
+  && make install \
+  ;fi \
+  \
+  # compile external php modules for version >7.0.0
+  && if [ $PHP_VERSION \> 7.0.0 ];then cd /usr/src \
   && : "---------- realpathturbo - https://bugs.php.net/bug.php?id=52312 ----------" \
   && curl -fSL --connect-timeout 30 "https://github.com/Whissi/realpath_turbo/archive/v${REALPATHTURBO_VERSION}.tar.gz" | tar xz -C /usr/src/ \
   && cd /usr/src/realpath_turbo-${REALPATHTURBO_VERSION} \
@@ -394,26 +498,15 @@ RUN set -xe \
   && ./configure \
   && make \
   && make install \
-  && : "---------- phpredis ----------" \
-  && curl -fSL --connect-timeout 30 https://github.com/phpredis/phpredis/archive/${REDIS_VERSION}.tar.gz | tar xz -C /usr/src/ \
-  && cd /usr/src/phpredis-${REDIS_VERSION} \
-  && phpize \
-  && ./configure \
-  && make \
-  && make install \
   && : "---------- phpiredis ----------" \
   && : "---------- https://blog.remirepo.net/post/2016/11/13/Redis-from-PHP ----------" \
-  && apk add --virtual .phpiredis-build-dependencies hiredis-dev \
-  && apk add --virtual .phpiredis-runtime-dependencies hiredis \
   && curl -fSL --connect-timeout 30 https://github.com/nrk/phpiredis/archive/v${PHPIREDIS_VERSION}.tar.gz | tar xz -C /usr/src/ \
   && cd /usr/src/phpiredis-${PHPIREDIS_VERSION} \
   && phpize \
   && ./configure \
   && make \
   && make install \
-  && apk del .phpiredis-build-dependencies \
   && : "---------- tarantool ----------" \
-  && apk add --virtual .tarantool-runtime-dependencies libltdl \
   && curl -fSL --connect-timeout 30 "https://github.com/tarantool/tarantool-php/archive/${TARANTOOL_VERSION}.tar.gz" | tar xz -C /usr/src/ \
   && cd /usr/src/tarantool-php-${TARANTOOL_VERSION} \
   && phpize \
@@ -449,13 +542,34 @@ RUN set -xe \
   \
   # cleanup system
   && : "---------- Removing build dependencies, clean temporary files ----------" \
-  && apk del .build-deps \
+  # https://github.com/docker-library/php/issues/443
+	&& pecl update-channels \
+	&& rm -rf /tmp/pear ~/.pearrc \
+  # remove php sources
+  && cd /usr/src/php \
+	&& make clean \
+  && cd \
   && docker-php-source delete \
-  && rm -rf /var/cache/apk/* /tmp/* /var/usr/src/* /usr/src/* ${PHP_PREFIX}/lib/php/test ${PHP_PREFIX}/lib/php/doc ${PHP_PREFIX}/php/man
+  # remove packages used for build stage
+	&& apt-mark auto '.*' > /dev/null \
+	&& [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	find /usr/local -type f -executable -exec ldd '{}' ';' \
+		| awk '/=>/ { print $(NF-1) }' \
+		| sort -u \
+		| xargs -r dpkg-query --search \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -r apt-mark manual \
+	\
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/usr/src/* /usr/src/* ${PHP_PREFIX}/lib/php/test ${PHP_PREFIX}/lib/php/doc ${PHP_PREFIX}/php/man \
+	\
+  && : "---------- Show Builded PHP Version ----------" \
+  && php --version
 
-## ================ ALPINE POST-INSTALL CONFIGURATIONS ================ ##
-
+## post build configurations
 RUN set -xe \
+  && : "---------- Post Build configurations ----------" \
   # system paths and files configuration
   && cd /etc \
   # APACHE: alpine directory structure compatibility
@@ -479,6 +593,44 @@ RUN set -xe \
   && ln -s ${PHP_PREFIX}/etc/php \
   && ln -s ${PHP_PREFIX}/etc/pear.conf
 
+## php-fpm support
+RUN set -ex \
+  && : "---------- PHP-FPM configuration ----------" \
+  && cd ${PHP_PREFIX}/etc/php \
+	&& if [ -d php-fpm.d ]; then \
+		# for some reason, upstream's php-fpm.conf.default has "include=NONE/etc/php/php-fpm.d/*.conf"
+		sed 's!=NONE/!=!g' php-fpm.conf.default | tee php-fpm.conf > /dev/null; \
+		cp php-fpm.d/www.conf.default php-fpm.d/www.conf; \
+	else \
+		# PHP 5.x doesn't use "include=" by default, so we'll create our own simple config that mimics PHP 7+ for consistency
+		mkdir php-fpm.d; \
+		cp php-fpm.conf.default php-fpm.d/www.conf; \
+		{ \
+			echo '[global]'; \
+			echo 'include=etc/php/php-fpm.d/*.conf'; \
+		} | tee php-fpm.conf; \
+	fi \
+	&& { \
+		echo '[global]'; \
+		echo 'error_log = /proc/self/fd/2'; \
+		echo; \
+		echo '[www]'; \
+		echo '; if we send this to /proc/self/fd/1, it never appears'; \
+		echo 'access.log = /proc/self/fd/2'; \
+		echo; \
+		echo 'clear_env = no'; \
+		echo; \
+		echo '; Ensure worker stdout and stderr are sent to the main error log.'; \
+		echo 'catch_workers_output = yes'; \
+	} | tee php-fpm.d/docker.conf \
+	&& { \
+		echo '[global]'; \
+		echo 'daemonize = no'; \
+		echo; \
+		echo '[www]'; \
+		echo 'listen = 9000'; \
+	} | tee php-fpm.d/zz-docker.conf
+
 # add files to the container
 ADD Dockerfile filesystem /
 
@@ -488,4 +640,4 @@ EXPOSE 80 443
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
 
-ENV APP_VER "2.4.35-php5.6.38-132"
+ENV APP_VER "2.4.37-php7.3.0-191"

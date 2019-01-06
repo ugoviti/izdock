@@ -1,9 +1,9 @@
-build=132
+build=191
 
 # http://www.apache.org/dist/httpd/
 HTTPD_VERSION_MAJOR=2
 HTTPD_VERSION_MINOR=4
-HTTPD_VERSION_PATCH=35
+HTTPD_VERSION_PATCH=37
 
 # http://php.net/downloads.php (import from external vars file)
 #PHP_VERSION_MAJOR=
@@ -25,11 +25,11 @@ tag_ver_patch=${HTTPD_VERSION_PATCH}
 tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
 
 # default distribution IMAGE FROM
-image_from="alpine:3.7"
+image_from="debian:stretch-slim"
 
 # extra IMAGE FROM
-image_from_httpd="httpd:${tag_ver}-alpine"
-#image_from_php="php:$PHP_VERSION-alpine"
+image_from_httpd="httpd:${tag_ver}"
+#image_from_php="php:$PHP_VERSION"
 
 # image tags prefix/suffix
 tag_prefix=""
@@ -37,6 +37,7 @@ tag_suffix="-php${PHP_VERSION}"
 
 # image tags for builded image
 tags=""
+tags+=" ${tag_ver}-${build}"
 tags+=" ${tag_ver_major}.${tag_ver_minor}-php${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}"
 tags+=" ${tag_ver}-php${PHP_VERSION}"
 tags+=" ${tag_ver}-php${PHP_VERSION}-${build}"

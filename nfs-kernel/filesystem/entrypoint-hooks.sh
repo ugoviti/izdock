@@ -21,8 +21,8 @@ init_rpc() {
     rpc.statd --no-notify --port 32765 --outgoing-port 32766 || return 0
 
     echo "--> displaying rpcbind status..."
-    /sbin/rpcinfo 
-    
+    /usr/sbin/rpcinfo
+
     # not needed with ganesha
     # rpc.gssd || return 0
     # rpc.idmapd || return 0

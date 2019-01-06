@@ -1,7 +1,6 @@
-ARG image_from=nginx:1.14.0-alpine
+ARG image_from=nginx:1.14.2
 
-FROM golang:1.10.3-alpine3.7 AS gcsfuse
-RUN apk add --no-cache git
+FROM golang:1.11.2-stretch AS gcsfuse
 ENV GOPATH /go
 RUN go get -u github.com/googlecloudplatform/gcsfuse
 
@@ -11,7 +10,7 @@ MAINTAINER Ugo Viti <ugo.viti@initzero.it>
 
 # custom app configuration variables
 ENV APP                   "NGINX Web Server"
-ENV APP_NAME                "nginx"
+ENV APP_NAME              "nginx"
 ENV APP_CONF              ""
 ENV APP_CONF_PHP          ""
 ENV APP_DATA              ""
@@ -22,45 +21,32 @@ ENV APP_CONF_DEFAULT      "/etc/nginx"
 ENV APP_DATA_DEFAULT      "/var/www/localhost/htdocs"
 ENV APP_LOGS_DEFAULT      "/var/log/nginx"
 
+## default variables
+ENV TINI_VERSION=0.18.0
+ENV DEBIAN_FRONTEND=noninteractive
+
 ## install
-RUN set -x \
-  && apk upgrade --update --no-cache \
-  && apk add \
-  tini \
+RUN set -ex \
+  && apt-get update && apt-get upgrade -y \
+  && apt-get install -y --no-install-recommends \
   runit \
   bash \
+  procps \
+  net-tools \
+  curl \
   inotify-tools \
   ca-certificates \
-#  msmtp \
-#  openssl \
-#  pcre \
-#  zlib \
-#  libuuid \
-#  apr \
-#  apr-util \
-#  libjpeg-turbo \
-#  icu \
-#  icu-libs \
-#  imagemagick \
-#  nginx \
-#  nginx-mod-http-headers-more \
-#  nginx-mod-stream \
-#  nginx-mod-stream-geoip \
-#  ssmtp \
-#  rsyslog \
-#  py2-future \
-#  certbot \
-  && rm -rf /var/cache/apk/* /tmp/* 
-
-# alpine directory structure compatibility
-RUN set -x \
-  && cd /etc \
+  && update-ca-certificates \
+  # install tini as init container
+  && curl -fSL --connect-timeout 30 http://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb -o tini_$TINI_VERSION-amd64.deb \
+  && dpkg -i tini_$TINI_VERSION-amd64.deb \
+  && rm -f tini_$TINI_VERSION-amd64.deb \
+  # post install customizazions: add user nginx to tomcat group, used with initzero backend integration
+  && groupadd -g 91 tomcat && gpasswd -a www-data tomcat \
   && mkdir -p /var/www/localhost/htdocs \
-	&& addgroup -g 82 -S www-data \
-	&& adduser -u 82 -D -S -G www-data www-data
-
-# add user nginx to tomcat group, used with initzero backend integration
-RUN addgroup -g 91 tomcat && addgroup www-data tomcat
+  # cleanup system
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # install gcsfuse
 COPY --from=gcsfuse /go/bin/gcsfuse /usr/local/bin/
@@ -76,6 +62,6 @@ EXPOSE 80/tcp 443/tcp
 
 # entrypoint
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/entrypoint.sh", "runsvdir", "-P", "/etc/runit/services"]
+CMD ["/entrypoint.sh", "runsvdir", "-P", "/etc/service"]
 
-ENV APP_VER
+ENV APP_VER "1.14.2-32"

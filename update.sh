@@ -6,6 +6,9 @@ container="$1"
 shift
 vars_file="$1"
 
+# sanitize container variable
+container="${container//\//}"
+
 docker_init() {
 [ -z "$container" ] && echo "ERROR: undefined container name" && exit 1
 [ ! -e "$container" ] && echo "ERROR: the container directory doesn't exist: $container" && exit 1
@@ -64,7 +67,7 @@ fi
 set -x
 
 # build and apply tags
-docker build -t ${repo}${container} ${imagetags} ${arg} .
+docker build --rm -t ${repo}${container} ${imagetags} ${arg} .
 retval=$?
 set +x
 [ $retval != 0 ] && exit 1

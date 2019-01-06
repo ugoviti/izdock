@@ -16,7 +16,7 @@ echo "=> Configuring NGINX WEB Server..."
 : ${multi_accept:="on"}
 
 # config optimizations
-sed -e "s/^user .*;/user www-data;/" -i /etc/nginx/nginx.conf # alpine www-data compatibility
+sed -e "s/^user .*;/user www-data;/" -i /etc/nginx/nginx.conf # www-data user compatibility
 sed -e "s/worker_processes .*/worker_processes $worker_processes;/" -i /etc/nginx/nginx.conf
 sed -e "s/worker_connections .*/worker_connections $worker_connections;/" -i /etc/nginx/nginx.conf
 sed -e "/worker_connections/a multi_accept $multi_accept;" -i /etc/nginx/nginx.conf
