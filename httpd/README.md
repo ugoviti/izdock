@@ -2,8 +2,9 @@
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
 # Supported tags
+-	`2.4.37-php7.3.0-BUILD`, `2.4.37-php7.3.0`, `2.4-php7.3`, `php7.3`
 -	`2.4.37-php7.2.13-BUILD`, `2.4.37-php7.2.13`, `2.4-php7.2`, `php7.2`, `2`, `2.4`, `2.4.37`, `latest`
--	`2.4.37-php7.1.25-BUILD`, `2.4.37-php7.1.25`, `2.4-php7.1`, `php7.1` 
+-	`2.4.37-php7.1.25-BUILD`, `2.4.37-php7.1.25`, `2.4-php7.1`, `php7.1`
 -	`2.4.37-php5.6.39-BUILD`, `2.4.37-php5.6.39`, `2.4-php5.6`, `php5.6`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
@@ -46,13 +47,13 @@ You can change the default behaviour using the following variables (in bold the 
 : ${HTTPD_MOD_SSL:=false}         # (true|**false**) enable apache module mod_ssl
 : ${HTTPD_CONF_DIR:=/etc/apache2} # (**/etc/apache2**) # apache config dir
 : ${HTTPD_MPM:=prefork}           # (event|worker|**prefork**) # default apache mpm worker to use
-: ${PHP_ENABLED:=true}            # (**true**|false) enable apache module mod_php 
+: ${PHP_ENABLED:=true}            # (**true**|false) enable apache module mod_php
 : ${PHPFPM_ENABLED:=false}        # (true|**false**) enable php-fpm service
 : ${PHPINFO:=false}               # (true|**false**) if true, then automatically create a **info.php** file into webroot
 : ${DOCUMENTROOT:=/var/www/localhost/htdocs} # (**directory path**) default webroot path
 ```
 
-**MSMTP MTA Agent:** 
+**MSMTP MTA Agent:**
 ```
 : ${domain:="$HOSTNAME"}                # local hostname
 : ${from:="root@localhost.localdomain"} # default From email address
