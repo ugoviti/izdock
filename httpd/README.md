@@ -2,10 +2,10 @@
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
 # Supported tags
--	`2.4.37-php7.3.0-BUILD`, `2.4.37-php7.3.0`, `2.4-php7.3`, `php7.3`
--	`2.4.37-php7.2.13-BUILD`, `2.4.37-php7.2.13`, `2.4-php7.2`, `php7.2`, `2`, `2.4`, `2.4.37`, `latest`
--	`2.4.37-php7.1.25-BUILD`, `2.4.37-php7.1.25`, `2.4-php7.1`, `php7.1`
--	`2.4.37-php5.6.39-BUILD`, `2.4.37-php5.6.39`, `2.4-php5.6`, `php5.6`
+* `2.4.37-php7.3.1-BUILD, 2.4.37-php7.3.1, 2.4-php7.3, php7.3`
+* `2.4.37-php7.2.14-BUILD, 2.4.37-php7.2.14, 2.4-php7.2, php7.2, 2, 2.4, 2.4.37, latest`
+* `2.4.37-php7.1.26-BUILD, 2.4.37-php7.1.26, 2.4-php7.1, php7.1`
+* `2.4.37-php5.6.40-BUILD, 2.4.37-php5.6.40, 2.4-php5.6, php5.6`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
 

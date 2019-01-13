@@ -22,10 +22,10 @@ cd "$container"
 # import container variables to manage tags variables
 source $vars_file
 
-[ -z "$build" ] && build=1 || let build+=1
+[ -z "${tag_ver_build}" ] && tag_ver_build=1 || let tag_ver_build+=1
 # update build version
-#add_replace_line "$vars_file" "build=" "build=$build"
-add_replace_line "$(realpath vars)" "build=" "build=$build"
+#add_replace_line "$vars_file" "tag_ver_build=" "tag_ver_build=${tag_ver_build}"
+add_replace_line "$(realpath vars)" "tag_ver_build=" "tag_ver_build=${tag_ver_build}"
 
 # import common variables
 source $PWD/../vars
@@ -47,7 +47,8 @@ if ! systemctl status docker >/dev/null; then sudo systemctl start docker ; fi
 docker_build() {
 
 # update Dockerfile version
-sed "s/^ENV APP_VER.*/ENV APP_VER \"${tag_prefix}${tag_ver}${tag_suffix}-${build}\"/" -i Dockerfile
+#sed "s/^APP_VER.*/APP_VER \"${tag_prefix}${tag_ver}${tag_suffix}-${tag_ver_build}\"/" -i VERSION
+echo "${tag_prefix}${tag_ver}${tag_suffix}-${tag_ver_build}" > VERSION
 
 # build
 if [ ! -z "$args" ]; then
@@ -59,7 +60,7 @@ fi
 if [ ! -z "$tags" ]; then
    [ $upload_gcloud = 1 ] && repo="$repo_gcloud/"
    [ $upload_docker = 1 ] && repo="$repo_docker/"
-   for tag in $tags ; do 
+   for tag in $tags ; do
      imagetags+=" -t ${repo}${container}:${tag}"
     done
 fi
@@ -94,10 +95,10 @@ remove_tags() {
   #set -xe
   # remove local tags
   if [ ! -z "$tags" ]; then
-   for tag in $tags ; do 
+   for tag in $tags ; do
     #docker rmi $repo$container:$tag
     # remove all tags with build number
-    [ ! -z "$(echo ${tag} | grep -- "-${build}")" ] && docker rmi ${repo}${container}:${tag}
+    [ ! -z "$(echo ${tag} | grep -- "-${tag_ver_build}")" ] && docker rmi ${repo}${container}:${tag}
    done
   fi
   set +xe
@@ -108,7 +109,7 @@ docker_report() {
   echo "==================================================="
   echo "=> Finished building the following images and tags:"
 
-  #echo "$repo/$container:$build"
+  #echo "$repo/$container:${tag_ver_build}"
 
   if [ ! -z "$tags" ]; then
    for tag in $tags ; do

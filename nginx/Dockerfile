@@ -9,8 +9,8 @@ FROM ${image_from}
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
 
 # custom app configuration variables
-ENV APP                   "NGINX Web Server"
 ENV APP_NAME              "nginx"
+ENV APP_DESCRIPTION       "NGINX Web Server"
 ENV APP_CONF              ""
 ENV APP_CONF_PHP          ""
 ENV APP_DATA              ""
@@ -51,17 +51,22 @@ RUN set -ex \
 # install gcsfuse
 COPY --from=gcsfuse /go/bin/gcsfuse /usr/local/bin/
 
-# copy files to container
-ADD Dockerfile filesystem /
-
-# volumes
-VOLUME ["$APP_DATA_DEFAULT", "$APP_LOGS_DEFAULT"]
-
 # exposed ports
 EXPOSE 80/tcp 443/tcp
 
-# entrypoint
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/entrypoint.sh", "runsvdir", "-P", "/etc/service"]
+# define volumes
+VOLUME ["$APP_DATA_DEFAULT", "$APP_LOGS_DEFAULT"]
 
-ENV APP_VER "1.14.2-32"
+# set default umask
+ENV UMASK           0002
+
+# container pre-entrypoint variables
+ENV MULTISERVICE    "true"
+ENV ENTRYPOINT_TINI "true"
+
+# add files to container
+ADD Dockerfile filesystem VERSION README.md /
+
+# start the container process
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["runsvdir", "-P", "/etc/service"]

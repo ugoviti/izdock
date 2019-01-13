@@ -9,19 +9,20 @@ FROM ${image_from_httpd} as httpd
 FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
-ENV APP_NAME httpd
+ENV APP_NAME        "httpd"
+ENV APP_DESCRIPTION "Apache HTTP Server"
 
 ## apps versions
 #ARG HTTPD_VERSION=
-ARG PHP_VERSION=7.2.13
-ARG PHP_SHA256=14b0429abdb46b65c843e5882c9a8c46b31dfbf279c747293b8ab950c2644a4b
+ARG PHP_VERSION=7.2.14
+ARG PHP_SHA256=ee3f1cc102b073578a3c53ba4420a76da3d9f0c981c02b1664ae741ca65af84f
 
 ## php modules version to compile
 # https://github.com/phpredis/phpredis/releases
 ARG REDIS_VERSION=4.2.0
 
 # https://github.com/php-memcached-dev/php-memcached/releases
-ARG MEMCACHED_VERSION=3.0.4
+ARG MEMCACHED_VERSION=3.1.3
 
 # https://github.com/Whissi/realpath_turbo
 ARG REALPATHTURBO_VERSION=2.0.0
@@ -200,6 +201,8 @@ RUN set -ex \
 #  && adduser -u 82 -S -D -h /var/cache/www-data -s /sbin/nologin -G www-data www-data \
   # add user www-data to tomcat group, used with initzero backend integration
   && groupadd -g 91 tomcat && gpasswd -a www-data tomcat \
+  # cleanup system
+  && : "---------- Removing build dependencies, clean temporary files ----------" \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -631,13 +634,17 @@ RUN set -ex \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf
 
-# add files to the container
-ADD Dockerfile filesystem /
+# exposed ports
+EXPOSE 80/TCP 443/TCP
 
-EXPOSE 80 443
+# container pre-entrypoint variables
+ENV MULTISERVICE    "false"
+ENV ENTRYPOINT_TINI "true"
+ENV UMASK           0002
 
-# entrypoint
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/entrypoint.sh", "httpd", "-D", "FOREGROUND"]
+# add files to container
+ADD Dockerfile filesystem VERSION README.md /
 
-ENV APP_VER "2.4.37-php7.3.0-191"
+# start the container process
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["httpd", "-D", "FOREGROUND"]

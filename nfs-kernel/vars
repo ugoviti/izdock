@@ -1,7 +1,7 @@
-build=4
+tag_ver_build=7
 
 tag_latest=yes
 
 tag_ver_major=1
 tag_ver_minor=0
-tag_ver_patch=0
+tag_ver_patch=1

@@ -1,4 +1,4 @@
-build=191
+tag_ver_build=6
 
 # http://www.apache.org/dist/httpd/
 HTTPD_VERSION_MAJOR=2
@@ -37,10 +37,10 @@ tag_suffix="-php${PHP_VERSION}"
 
 # image tags for builded image
 tags=""
-tags+=" ${tag_ver}-${build}"
+tags+=" ${tag_ver}-${tag_ver_build}"
 tags+=" ${tag_ver_major}.${tag_ver_minor}-php${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}"
 tags+=" ${tag_ver}-php${PHP_VERSION}"
-tags+=" ${tag_ver}-php${PHP_VERSION}-${build}"
+tags+=" ${tag_ver}-php${PHP_VERSION}-${tag_ver_build}"
 tags+=" php${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}"
 
 # by default do not set latest tag and import from specific vars file

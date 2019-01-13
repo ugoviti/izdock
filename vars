@@ -4,8 +4,6 @@ repo_gcloud=iz-wms
 upload_docker=1
 repo_docker=izdock
 
-#: ${build:=1}
-
 : ${container:=}
 : ${image_from:=}
 : ${tag_prefix:=}
@@ -16,10 +14,11 @@ repo_docker=izdock
 : ${tag_ver_major:=}
 : ${tag_ver_minor:=}
 : ${tag_ver_patch:=}
+: ${tag_ver_build:=1}
 : ${tag_ver:=$tag_ver_major.$tag_ver_minor.$tag_ver_patch}
 
 tags="latest"
-tags+=" ${tag_prefix}${tag_ver}${tag_suffix}-${build}"
+tags+=" ${tag_prefix}${tag_ver}${tag_suffix}-${tag_ver_build}"
 tags+=" ${tag_prefix}${tag_ver}${tag_suffix}"
 tags+=" ${tag_prefix}${tag_ver_major}.${tag_ver_minor}${tag_suffix}"
 tags+=" ${tag_prefix}${tag_ver_major}${tag_suffix}"

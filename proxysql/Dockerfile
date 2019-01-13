@@ -36,16 +36,15 @@ RUN set -x \
   # cleanup system
   && rm -rf /var/lib/apt/lists/*
 
-# add files to container
-ADD Dockerfile /
-
 # exposed ports
 EXPOSE 3306/tcp 6032/tcp 6033/tcp
 
+# define volumes
 VOLUME ["/var/lib/proxysql"]
+
+# add files to container
+ADD Dockerfile VERSION README.md /
 
 # entrypoint
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["proxysql", "-f"]
-
-ENV APP_VER "1.4.13-18"

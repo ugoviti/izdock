@@ -5,6 +5,7 @@ FROM ${image_from}
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
 
 ENV APP_NAME "nfs-kernel"
+ENV APP_DESCRIPTION "Kernel mode NFS Server"
 
 # NFS daemon configuration
 ENV EXPORT_PATH    "/data"
@@ -57,13 +58,19 @@ RUN  mkdir -p /var/lib/nfs/rpc_pipefs \
 #  && mount /var/lib/nfs/rpc_pipefs
 #  && mount /proc/fs/nfsd
 
-VOLUME ["${EXPORT_PATH}"]
-
 # exposed ports
 EXPOSE 111/udp 111/tcp 2049/udp 2049/tcp 20048/udp 20048/tcp 32765/udp 32765/tcp
 
-# entrypoint
+# define volumes
+VOLUME ["${EXPORT_PATH}"]
+
+# container pre-entrypoint variables
+#ENV MULTISERVICE    "false"
+#ENV ENTRYPOINT_TINI "true"
+
+# add files to container
+ADD Dockerfile filesystem VERSION README.md /
+
+# start the container process
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/entrypoint.sh"]
-
-ENV APP_VER "1.0.0-4"
