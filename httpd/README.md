@@ -2,10 +2,10 @@
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
 # Supported tags
-* `2.4.37-php7.3.1-BUILD, 2.4.37-php7.3.1, 2.4-php7.3, php7.3`
-* `2.4.37-php7.2.14-BUILD, 2.4.37-php7.2.14, 2.4-php7.2, php7.2, 2, 2.4, 2.4.37, latest`
-* `2.4.37-php7.1.26-BUILD, 2.4.37-php7.1.26, 2.4-php7.1, php7.1`
-* `2.4.37-php5.6.40-BUILD, 2.4.37-php5.6.40, 2.4-php5.6, php5.6`
+* `2.4.38-php7.3.2-BUILD, 2.4.38-php7.3.2, 2.4-php7.3, php7.3, 2, 2.4, 2.4.38, latest`
+* `2.4.38-php7.2.15-BUILD, 2.4.38-php7.2.15, 2.4-php7.2, php7.2`
+* `2.4.38-php7.1.26-BUILD, 2.4.38-php7.1.26, 2.4-php7.1, php7.1`
+* `2.4.38-php5.6.40-BUILD, 2.4.38-php5.6.40, 2.4-php5.6, php5.6`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
 
@@ -14,16 +14,15 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 
 # Features
 - Small image footprint
-- Based on official [httpd](/_/httpd/) and [Debian Slim](/_/debian/) image
-- Configurable Apache MPM Worker (use **event** or **worker** for best scalability and memory optimization, PHP get automatically disabled because is not ZTS compiled). The default Apache MPM Worker is **prefork**
-- Built from scratch PHP as NTS (Not Threat Safe) and many useful php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
+- Based on official [httpd](/_/httpd/) and [Debian Stretch-Slim](/_/debian/) image
+- OnDemand configurable Apache MPM Worker (use **event** or **worker** for best scalability and memory optimization, PHP get automatically disabled because is not ZTS compiled). The default Apache MPM Worker is **prefork**
+- Build from scratch PHP as NTS (Not Threat Safe) and many useful php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
 - Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts
 - Automatically generate Self Signed SSL certificates if not found into configuration to avoid apache startup problems
 - Integrated PHP-FPM support using runit service manager
 - Many customizable variables to use
 
 # What is httpd?
-
 The Apache HTTP Server, colloquially called Apache, is a Web server application notable for playing a key role in the initial growth of the World Wide Web. Originally based on the NCSA HTTPd server, development of Apache began in early 1995 after work on the NCSA code stalled. Apache quickly overtook NCSA HTTPd as the dominant HTTP server, and has remained the most popular HTTP server in use since April 1996.
 
 > [wikipedia.org/wiki/Apache_HTTP_Server](http://en.wikipedia.org/wiki/Apache_HTTP_Server)

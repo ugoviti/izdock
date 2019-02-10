@@ -1,9 +1,9 @@
-tag_ver_build=6
+tag_ver_build=12
 
 # http://www.apache.org/dist/httpd/
 HTTPD_VERSION_MAJOR=2
 HTTPD_VERSION_MINOR=4
-HTTPD_VERSION_PATCH=37
+HTTPD_VERSION_PATCH=38
 
 # http://php.net/downloads.php (import from external vars file)
 #PHP_VERSION_MAJOR=
@@ -12,7 +12,7 @@ HTTPD_VERSION_PATCH=37
 #PHP_SHA256=
 
 # set default php version to compile using external vars file
-[ -z "$tag_latest" ] && source $PWD/vars.php72
+[ -z "$tag_latest" ] && source $PWD/vars.php73
 
 # internal vars
 HTTPD_VERSION=${HTTPD_VERSION_MAJOR}.${HTTPD_VERSION_MINOR}.${HTTPD_VERSION_PATCH}

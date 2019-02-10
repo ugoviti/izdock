@@ -4,7 +4,7 @@
 #set -ex
 
 # default variables
-# webserver options
+## webserver options
 : ${MULTISERVICE:=false}          # (true|**false**) enable multiple service manager
 : ${UMASK:=0002}                  # (**0002**) default umask when creating new files
 : ${SERVERNAME:=$HOSTNAME}        # (**$HOSTNAME**) default web server hostname
@@ -16,8 +16,11 @@
 : ${PHPFPM_ENABLED:=false}        # (true|**false**) enable php-fpm service
 : ${PHPINFO:=false}               # (true|**false**) if true, then automatically create a **info.php** file into webroot
 : ${DOCUMENTROOT:=/var/www/localhost/htdocs} # (**directory path**) default webroot path
+: ${PHP_PREFIX:=/usr/local/php}   # PHP base path
+: ${PHP_INI_DIR:=$PHP_PREFIX/etc/php} # php ini files directory
+: ${PHP_CONF:="$PHP_INI_DIR/php.ini"} # path of php.ini file
 
-# smtp options
+## smtp options
 : ${domain:="$HOSTNAME"}                # local hostname
 : ${from:="root@localhost.localdomain"} # default From email address
 : ${host:="localhost"}                  # remote smtp server
@@ -184,8 +187,6 @@ fi
 # load php modules (used by php-fpm also)
 if [ "$PHP_ENABLED" = "true" ] || [ "$PHPFPM_ENABLED" = "true" ]; then
   echo "=> INFO: enabling PHP Modules based on $(php -v| head -n1)..."
-  : ${PHP_PREFIX:=/usr/local/php}
-  : ${PHP_INI_DIR:=$PHP_PREFIX/etc/php}
   if [ "${PHP_MODULES_ENABLED}" = "all" ] || [ "${PHP_MODULES_ENABLED}" = "ALL" ]; then
       for MODULE in ${PHP_PREFIX}/lib/php/extensions/*/*.so; do docker-php-ext-enable $MODULE ; done \
     else
@@ -194,7 +195,8 @@ if [ "$PHP_ENABLED" = "true" ] || [ "$PHPFPM_ENABLED" = "true" ]; then
 fi
 
 
-# SSMTP MTA Agent
+cfgService_mta() {
+## SSMTP MTA Agent
 if [ -e "/usr/sbin/ssmtp" ]; then
  echo "=> Configuring SSMTP MTA..."
  mv /usr/sbin/sendmail /usr/sbin/sendmail.ssmtp
@@ -215,7 +217,7 @@ if [ -e "/usr/sbin/ssmtp" ]; then
  print_ssmtp_conf > /etc/ssmtp/ssmtp.conf
 fi
 
-# MSMTP MTA Agent
+## MSMTP MTA Agent
 if [ -e "/usr/bin/msmtp" ]; then
  echo "=> Configuring MSMTP MTA..."
  print_msmtp_conf() {
@@ -239,11 +241,36 @@ if [ -e "/usr/bin/msmtp" ]; then
  print_msmtp_conf > /etc/msmtp.conf
 fi
 
+## DMA MTA Agent
+if [ -e "/usr/sbin/dma" ]; then
+ echo "=> Configuring DMA MTA..."
+
+ print_dma_conf() {
+  [ $host ] && echo "SMARTHOST $host"
+  [ $tls = "on" ] && echo "SECURETRANSFER"
+  [ $starttls = "on" ] && echo "STARTTLS"
+  [ $port ] && echo "PORT $port"
+  [ $from ] && echo "MASQUERADE $from"
+  echo "MAILNAME /etc/mailname"
+ }
+ print_auth_conf() {
+  echo $([ ! -z "${username}" ] && echo -n "$username|")${host}$([ ! -z "${password}" ] && echo -n ":${password}|")
+ }
+ [ $domain ] && echo "$domain" > /etc/mailname
+ print_dma_conf > /etc/dma/dma.conf
+ print_auth_conf > /etc/dma/auth.conf
+fi
+
 echo -n "--> forwarding all emails to: $host"
 [ -n "$username" ] && echo -n " using username: $username"
 echo
 
-# izdsendmail config
-if [ ! -e "/usr/sbin/sendmail" ];then ln -s /usr/local/sbin/izsendmail /usr/sbin/sendmail; fi
-sed "s/;sendmail_path =.*/sendmail_path = \/usr\/local\/sbin\/izsendmail -t -i/" -i /etc/php/php.ini
-sed "s/auto_prepend_file =.*/auto_prepend_file = \/usr\/local\/share\/izsendmail-env.php/" -i /etc/php/php.ini
+## izdsendmail config
+echo "--> Configuring izSendmail MTA Wrapper..."
+[ -e "/usr/sbin/sendmail" ] && mv /usr/sbin/sendmail /usr/sbin/sendmail.dist
+ln -s /usr/local/sbin/izsendmail /usr/sbin/sendmail
+sed "s/;sendmail_path =.*/sendmail_path = \/usr\/local\/sbin\/izsendmail -t -i/" -i ${PHP_CONF}
+sed "s/auto_prepend_file =.*/auto_prepend_file = \/usr\/local\/share\/izsendmail-env.php/" -i ${PHP_CONF}
+}
+
+cfgService_mta

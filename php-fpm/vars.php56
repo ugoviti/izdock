@@ -8,6 +8,6 @@ tag_ver_patch=${PHP_VERSION_PATCH}
 tag_ver=${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}.${PHP_VERSION_PATCH}
 
 tag_latest=no
-tags="${tag_ver_major} ${tag_ver_major}.${tag_ver_minor} ${tag_ver} ${tag_ver}-${build} "
+tags="${tag_ver_major} ${tag_ver_major}.${tag_ver_minor} ${tag_ver} ${tag_ver}-${tag_ver_build} "
 
 source $PWD/vars

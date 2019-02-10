@@ -18,11 +18,16 @@ WORKDIR /var/www/html
 
 EXPOSE 9000
 
+# set default umask
+ENV UMASK           0002
+
+# container pre-entrypoint variables
+ENV MULTISERVICE    "false"
+ENV ENTRYPOINT_TINI "true"
+
 # add files to container
-COPY Dockerfile /
+ADD Dockerfile VERSION README.md /
 
-# entrypoint
-ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/entrypoint.sh", "php-fpm"]
-
-ENV APP_VER "7.1.25-96"
+# start the container process
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["php-fpm"]

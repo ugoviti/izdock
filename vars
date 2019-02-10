@@ -23,7 +23,7 @@ tags+=" ${tag_prefix}${tag_ver}${tag_suffix}"
 tags+=" ${tag_prefix}${tag_ver_major}.${tag_ver_minor}${tag_suffix}"
 tags+=" ${tag_prefix}${tag_ver_major}${tag_suffix}"
 
-[ ! -z ${image_from} ]    && args="image_from=${image_from}"
+[ ! -z ${image_from} ]    && args+=" image_from=${image_from}"
 [ ! -z ${tag_ver} ]       && args+=" tag_ver=${tag_ver}"
 [ ! -z ${tag_ver_major} ] && args+=" tag_ver_major=${tag_ver_major}"
 [ ! -z ${tag_ver_minor} ] && args+=" tag_ver_minor=${tag_ver_minor}"
