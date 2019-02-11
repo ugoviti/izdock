@@ -1,0 +1,17 @@
+#!/bin/sh
+#sv start socklog || exit 1
+
+if [ ! -z "${DNS}" ]; then
+  echo "--> Found user defined DNS server address: $DNS"
+# if we are into k8s use the default resolver
+#elif [ ! -z "${KUBERNETES_SERVICE_HOST}" ]; then
+#  echo "--> Kubernetes detected: configuring DNS server address to: $KUBERNETES_SERVICE_HOST"
+#  export DNS="$KUBERNETES_SERVICE_HOST"
+elif [ -z "${DNS}" ]; then
+  # set default to localhost
+  DNS=$(cat /etc/resolv.conf |grep -i nameserver|head -n1|cut -d ' ' -f2)
+  echo "--> No default DNS specified: configuring DNS server address to: $DNS"
+  export DNS
+fi
+
+exec haproxy -f /usr/local/etc/haproxy/haproxy.cfg

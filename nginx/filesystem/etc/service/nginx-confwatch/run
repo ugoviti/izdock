@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+set -eu
+
+NGINX_CONFWATCH=${NGINX_CONFWATCH:-/etc/nginx/conf.d}
+
+exec 2>&1
+#source /env
+
+COMMAND=/usr/local/sbin/nginx-confwatch
+PID_FILE=/run/nginx-confwatch.pid
+
+# Create pid file's directory
+install -d -o nginx -g nginx ${PID_FILE%/*}
+
+# Check nginx command is executable or not
+test -x ${COMMAND} || exit 0
+
+# Test nginx configuration
+#${COMMAND} -t -q || exit 0
+
+#trap "pkill -SIGHUP runsvdir" SIGTERM SIGINT
+
+echo "Starting '${COMMAND}' with PID: $$"
+
+echo $$ > $PID_FILE
+
+exec ${COMMAND} "$NGINX_CONFWATCH"

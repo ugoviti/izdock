@@ -1,0 +1,28 @@
+FROM haproxy:1.8.14-alpine
+
+MAINTAINER Ugo Viti <ugo.viti@initzero.it>
+
+ENV APP      "High Performance TCP/HTTP Load Balancer"
+ENV APP_NAME "haproxy"
+
+ENV SVDIR /etc/runit/services
+
+RUN set -exo \
+  && apk upgrade --update --no-cache \
+  && apk add \
+	tini \
+	bash \
+	runit \
+	socklog \
+ && ln -sf /var/log /var/log/haproxy.log \
+ && rm -rf /var/cache/apk/* /tmp/*
+
+# add files to container
+ADD Dockerfile /
+ADD filesystem /
+
+# init
+ENTRYPOINT ["tini", "-g", "--"]
+CMD ["/entrypoint.sh", "runsvdir", "-P", "/etc/runit/services"]
+
+ENV APP_VER "1.8.14-4"
