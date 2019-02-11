@@ -6,6 +6,6 @@ tag_ver_minor=${PHP_VERSION_MINOR}
 tag_ver_patch=${PHP_VERSION_PATCH}
 tag_ver=${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}.${PHP_VERSION_PATCH}
 
-tag_latest=yes
+tag_latest=no
 
 source $PWD/vars

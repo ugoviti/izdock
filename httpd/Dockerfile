@@ -279,7 +279,6 @@ RUN set -ex \
     libldb-dev \
     zlib1g-dev \
     libcurl4-openssl-dev \
-#    libcurl4-gnutls-dev \
     libxml2-dev \
     libbison-dev \
     libbz2-dev \
@@ -288,6 +287,7 @@ RUN set -ex \
     libxpm-dev \
     libxslt1-dev \
     libmemcached-dev \
+#    libcurl4-gnutls-dev \
 #    default-libmysqlclient-dev \
     ${PHP_EXTRA_BUILD_DEPS:-} \
   # download official php docker scripts
@@ -405,6 +405,7 @@ RUN set -ex \
     --enable-xml \
     --enable-xmlreader \
     --enable-xmlwriter \
+    --enable-zip \
     --with-bz2 \
     --with-curl \
     --with-enchant \

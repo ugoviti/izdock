@@ -2,8 +2,9 @@
 Production ready PHP-FPM (FastCGI Process Manager) image based on Debian (Slim) Linux + izsendmail for MTA logging
 
 # Supported tags
--	`7.2.14-BUILD`, `7.2.14`, `7.2`, `7`, `latest`
--	`7.1.26-BUILD`, `7.1.26`, `7.1`,
+-	`7.3.2-BUILD`, `7.3.2`, `7.3`, `7`, `latest`
+-	`7.2.15-BUILD`, `7.2.15`, `7.2`
+-	`7.1.26-BUILD`, `7.1.26`, `7.1`
 -	`5.6.40-BUILD`, `5.6.40`, `5.6`, `5`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
@@ -13,7 +14,7 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 
 # Features
 - Small image footprint (all images are based on [izdock httpd image](/r/izdock/httpd/))
-- The Apache HTTPD Web Server is removed from this image
+- The Apache HTTPD Web Server is present but unused from this image
 - You can use `izdock/php-fpm` as sidecar image (Docker Compose or Kubernetes) for NGINX or Apache configured with MPM Event and Reverse Proxy for PHP pages
 - Build from scratch PHP interpreter with all modules included, plus external modules (igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool)
 - Included izsendmail bash script as wrapper for `msmtp` for PHP logging of outgoing emails

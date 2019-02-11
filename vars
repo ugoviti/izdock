@@ -1,5 +1,5 @@
 upload_gcloud=0
-repo_gcloud=iz-wms
+repo_gcloud=izdock
 
 upload_docker=1
 repo_docker=izdock
