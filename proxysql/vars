@@ -1,7 +1,7 @@
-tag_ver_build=19
+tag_ver_build=17
 
-image_from="debian:stretch-slim"
+image_from="debian:buster-slim"
 
-tag_ver_major=1
-tag_ver_minor=4
-tag_ver_patch=13
+tag_ver_major=2
+tag_ver_minor=0
+tag_ver_patch=1
