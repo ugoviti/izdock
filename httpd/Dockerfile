@@ -201,6 +201,7 @@ RUN set -ex \
     libodbc1 \
     webp \
     libmemcached11 \
+    inotify-tools \
 #    default-mysql-client-core \
 #  && addgroup -g 82 -S www-data \
 #  && adduser -u 82 -S -D -h /var/cache/www-data -s /sbin/nologin -G www-data www-data \
