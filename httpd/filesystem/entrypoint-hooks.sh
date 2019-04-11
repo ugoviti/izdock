@@ -133,9 +133,12 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
       sed -e "s|$line|#$line|" -i "$config_file"
      else
       echo "---> WARNING: the file '$config_file' is not writable... unable to disable line: '$config_object $cert_file'"
-      echo "---> INFO: generating self signed certificate file"
+      echo "----> INFO: generating self signed certificate file"
       ssl_dir="$(print_path $cert_file)"
       cn="$(print_name $cert_file)"
+
+      cd "$ssl_dir"
+
       # test1: single pass generate certificate (missing chain file)
       #openssl req -x509 -newkey rsa:4096 -nodes -keyout "${ssl_dir}/${cn}.key" -out "${ssl_dir}/$cn.crt" -days 365 -subj "/CN=$cn"
       # test2: x509v1
@@ -147,23 +150,23 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
       #openssl x509 -signkey "${ssl_dir}/${cn}.ca.key" -in "${ssl_dir}/${cn}.ca.csr" -req -days 3650 -out "${ssl_dir}/${cn}.chain.crt"
 
       # generate CA x509v3
-      echo "----> INFO: generating Certification Authority files"
+      echo "-----> INFO: generating Certification Authority files"
       openssl req -x509 -newkey rsa:4096 -sha256 -extensions v3_ca -nodes -keyout "${ssl_dir}/${cn}.ca.key" -out "${ssl_dir}/${cn}.ca.crt" -subj "/O=Self Signed/OU=Web Services/CN=$cn Certification Authority" -days 3650
 
       # generate CA Intermediate Chain x509v3
-      echo "----> INFO: generating Intermediate Chain KEY file"
+      echo "-----> INFO: generating Intermediate Chain KEY file"
       openssl genrsa -out "${ssl_dir}/${cn}.chain.key" 4096
-      echo "----> INFO: generating Intermediate Chain CSR file"
+      echo "-----> INFO: generating Intermediate Chain CSR file"
       openssl req -new -sha256 -key "${ssl_dir}/${cn}.chain.key" -out "${ssl_dir}/${cn}.chain.csr" -subj "/O=Self Signed/OU=Web Services/CN=$cn CA Intermediate Chain"
-      echo "----> INFO: generating Intermediate Chain CRT file"
+      echo "-----> INFO: generating Intermediate Chain CRT file"
       openssl x509 -req -sha256 -in "${ssl_dir}/${cn}.chain.csr" -CA "${ssl_dir}/${cn}.ca.crt" -CAkey "${ssl_dir}/${cn}.ca.key" -CAcreateserial -out "${ssl_dir}/${cn}.chain.crt" -days 3650
 
       # generate domain certs
-      echo "----> INFO: generating ${cn} KEY file"
+      echo "-----> INFO: generating ${cn} KEY file"
       openssl genrsa -out "${ssl_dir}/${cn}.key" 4096
-      echo "----> INFO: generating ${cn} CSR file"
+      echo "-----> INFO: generating ${cn} CSR file"
       openssl req -new -sha256 -key "${ssl_dir}/${cn}.key" -out "${ssl_dir}/${cn}.csr" -subj "/O=Self Signed/OU=Web Services/CN=$cn"
-      echo "----> INFO: generating ${cn} CRT file by signing CSR file"
+      echo "-----> INFO: generating ${cn} CRT file by signing CSR file"
       openssl x509 -req -sha256 -in "${ssl_dir}/${cn}.csr" -CA "${ssl_dir}/${cn}.ca.crt" -CAkey "${ssl_dir}/${cn}.ca.key" -CAcreateserial -out "${ssl_dir}/${cn}.crt" -days 3650
 
       # avoid missing chain.crt file
