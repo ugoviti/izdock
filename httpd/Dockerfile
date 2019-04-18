@@ -1,5 +1,5 @@
 ARG image_from=debian:stretch-slim
-ARG image_from_httpd=httpd:2.4.38
+ARG image_from_httpd=httpd:2.4.39
 #ARG image_from_php=php:7.1.24
 #ARG image_from_v8=alexmasterov/alpine-libv8:6.7
 
@@ -14,12 +14,12 @@ ENV APP_DESCRIPTION "Apache HTTP Server"
 
 ## apps versions
 #ARG HTTPD_VERSION=
-ARG PHP_VERSION=7.3.3
-ARG PHP_SHA256=6bb03e79a183d0cb059a6d117bbb2e0679cab667fb713a13c6a16f56bebab9b3
+ARG PHP_VERSION=7.3.4
+ARG PHP_SHA256=6fe79fa1f8655f98ef6708cde8751299796d6c1e225081011f4104625b923b83
 
 ## php modules version to compile
 # https://github.com/phpredis/phpredis/releases
-ARG REDIS_VERSION=4.2.0
+ARG REDIS_VERSION=4.3.0
 
 # https://github.com/php-memcached-dev/php-memcached/releases
 ARG MEMCACHED_VERSION=3.1.3
@@ -28,7 +28,7 @@ ARG MEMCACHED_VERSION=3.1.3
 ARG REALPATHTURBO_VERSION=2.0.0
 
 # https://github.com/xdebug/xdebug/releases
-ARG XDEBUG_VERSION=2.6.1
+ARG XDEBUG_VERSION=2.7.1
 
 # https://github.com/msgpack/msgpack-php/releases
 ARG MSGPACK_VERSION=2.0.3

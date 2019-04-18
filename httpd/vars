@@ -1,9 +1,12 @@
-tag_ver_build=33
+tag_ver_build=3
+
+# default distribution IMAGE FROM
+image_from="debian:stretch-slim"
 
 # http://www.apache.org/dist/httpd/
 HTTPD_VERSION_MAJOR=2
 HTTPD_VERSION_MINOR=4
-HTTPD_VERSION_PATCH=38
+HTTPD_VERSION_PATCH=39
 
 # http://php.net/downloads.php (import from external vars file)
 #PHP_VERSION_MAJOR=
@@ -23,9 +26,6 @@ tag_ver_major=${HTTPD_VERSION_MAJOR}
 tag_ver_minor=${HTTPD_VERSION_MINOR}
 tag_ver_patch=${HTTPD_VERSION_PATCH}
 tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
-
-# default distribution IMAGE FROM
-image_from="debian:stretch-slim"
 
 # extra IMAGE FROM
 image_from_httpd="httpd:${tag_ver}"

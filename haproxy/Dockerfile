@@ -1,4 +1,4 @@
-ARG image_from=haproxy:1.9.4
+ARG image_from=haproxy:1.9.6
 FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
