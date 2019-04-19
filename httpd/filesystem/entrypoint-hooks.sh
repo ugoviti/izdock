@@ -120,7 +120,12 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
 
   # verify if SSL files exist otherwise generate self signed certs
   #set -x
-  grep -H -r "^.*SSLCertificate.*File " ${HTTPD_CONF_DIR}/*.d/*.conf 2>/dev/null |
+
+  # search for all certificates
+  #grep -H -r "^.*SSLCertificate.*File " ${HTTPD_CONF_DIR}/*.d/*.conf 2>/dev/null |
+
+  # search if exist all SSLCertificateFile files
+  grep -H -r "^.*SSLCertificateFile " ${HTTPD_CONF_DIR}/*.d/*.conf 2>/dev/null |
   {
   while read line; do
   config_file=$(echo $line | awk '{print $1}' | sed 's/:$//')
@@ -133,41 +138,51 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
       sed -e "s|$line|#$line|" -i "$config_file"
      else
       echo "---> WARNING: the file '$config_file' is not writable... unable to disable line: '$config_object $cert_file'"
-      echo "----> INFO: generating self signed certificate file"
+      echo "----> INFO: generating self signed certificate file to avoid configuration errors"
       ssl_dir="$(print_path $cert_file)"
       cn="$(print_name $cert_file)"
 
-      cd "$ssl_dir"
+      # create the ssl dir if not exist
+      [ ! -e "${ssl_dir}" ] && mkdir -p "${ssl_dir}"
 
-      # test1: single pass generate certificate (missing chain file)
-      #openssl req -x509 -newkey rsa:4096 -nodes -keyout "${ssl_dir}/${cn}.key" -out "${ssl_dir}/$cn.crt" -days 365 -subj "/CN=$cn"
-      # test2: x509v1
-      #echo "----> INFO: generating CA KEY file"
-      #openssl genrsa -out "${ssl_dir}/${cn}.ca.key" 4096
-      #echo "----> INFO: generating CA CSR file"
-      #openssl req -new -sha256 -key "${ssl_dir}/${cn}.ca.key" -out "${ssl_dir}/${cn}.ca.csr" -subj "/O=Self Signed/OU=Web Services/CN=$cn Certification Authority"
-      #echo "----> INFO: generating CA CRT file by signing CS CSR file"
-      #openssl x509 -signkey "${ssl_dir}/${cn}.ca.key" -in "${ssl_dir}/${cn}.ca.csr" -req -days 3650 -out "${ssl_dir}/${cn}.chain.crt"
+      # ssl domain files detection (FIXME: find a better way to discover the used files name. we are assuming that eevery certificate is located into different dir)
+      # detect the SSLCertificateFile
+      ssl_crt="$(grep -H -r "^.*SSLCertificateFile ${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
+
+      # detect the SSLCertificateKeyFile
+      ssl_key="$(grep -H -r "^.*SSLCertificateKeyFile ${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
+      ssl_csr="${ssl_dir}/${cn}.csr"
+
+      # detect the SSLCertificateKeyFile
+      ssl_chain_crt="$(grep -H -r "^.*SSLCertificateChainFile ${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
+      ssl_chain_key="${ssl_dir}/${cn}.chain.key"
+      ssl_chain_csr="${ssl_dir}/${cn}.chain.csr"
+
+      # openssl ca files
+      ssl_ca_key="${ssl_dir}/${cn}.ca.key"
+      ssl_ca_crt="${ssl_dir}/${cn}.ca.crt"
+
+      cd "${ssl_dir}"
 
       # generate CA x509v3
-      echo "-----> INFO: generating Certification Authority files"
-      openssl req -x509 -newkey rsa:4096 -sha256 -extensions v3_ca -nodes -keyout "${ssl_dir}/${cn}.ca.key" -out "${ssl_dir}/${cn}.ca.crt" -subj "/O=Self Signed/OU=Web Services/CN=$cn Certification Authority" -days 3650
+      echo "-----> INFO: generating Certification Authority files: ${ssl_ca_key}"
+      openssl req -x509 -newkey rsa:4096 -sha256 -extensions v3_ca -nodes -keyout "${ssl_ca_key}" -out "${ssl_ca_crt}" -subj "/O=Self Signed/OU=Web Services/CN=$cn Certification Authority" -days 3650
 
       # generate CA Intermediate Chain x509v3
-      echo "-----> INFO: generating Intermediate Chain KEY file"
-      openssl genrsa -out "${ssl_dir}/${cn}.chain.key" 4096
-      echo "-----> INFO: generating Intermediate Chain CSR file"
-      openssl req -new -sha256 -key "${ssl_dir}/${cn}.chain.key" -out "${ssl_dir}/${cn}.chain.csr" -subj "/O=Self Signed/OU=Web Services/CN=$cn CA Intermediate Chain"
-      echo "-----> INFO: generating Intermediate Chain CRT file"
-      openssl x509 -req -sha256 -in "${ssl_dir}/${cn}.chain.csr" -CA "${ssl_dir}/${cn}.ca.crt" -CAkey "${ssl_dir}/${cn}.ca.key" -CAcreateserial -out "${ssl_dir}/${cn}.chain.crt" -days 3650
+      echo "-----> INFO: generating Intermediate Chain KEY file: ${ssl_chain_key}"
+      openssl genrsa -out "${ssl_chain_key}" 4096
+      echo "-----> INFO: generating Intermediate Chain CSR file: ${ssl_chain_csr}"
+      openssl req -new -sha256 -key "${ssl_chain_key}" -out "${ssl_chain_csr}" -subj "/O=Self Signed/OU=Web Services/CN=$cn CA Intermediate Chain"
+      echo "-----> INFO: generating Intermediate Chain CRT file: ${ssl_chain_crt}"
+      openssl x509 -req -sha256 -in "${ssl_chain_csr}" -CA "${ssl_ca_crt}" -CAkey "${ssl_ca_key}" -CAcreateserial -out "${ssl_chain_crt}" -days 3650
 
       # generate domain certs
-      echo "-----> INFO: generating ${cn} KEY file"
-      openssl genrsa -out "${ssl_dir}/${cn}.key" 4096
-      echo "-----> INFO: generating ${cn} CSR file"
-      openssl req -new -sha256 -key "${ssl_dir}/${cn}.key" -out "${ssl_dir}/${cn}.csr" -subj "/O=Self Signed/OU=Web Services/CN=$cn"
-      echo "-----> INFO: generating ${cn} CRT file by signing CSR file"
-      openssl x509 -req -sha256 -in "${ssl_dir}/${cn}.csr" -CA "${ssl_dir}/${cn}.ca.crt" -CAkey "${ssl_dir}/${cn}.ca.key" -CAcreateserial -out "${ssl_dir}/${cn}.crt" -days 3650
+      echo "-----> INFO: generating ${cn} KEY file: ${ssl_key}"
+      openssl genrsa -out "${ssl_key}" 4096
+      echo "-----> INFO: generating ${cn} CSR file: ${ssl_csr}"
+      openssl req -new -sha256 -key "${ssl_key}" -out "${ssl_csr}" -subj "/O=Self Signed/OU=Web Services/CN=$cn"
+      echo "-----> INFO: generating ${cn} CRT file by signing CSR file: ${ssl_crt}"
+      openssl x509 -req -sha256 -in "${ssl_csr}" -CA "${ssl_ca_crt}" -CAkey "${ssl_ca_key}" -CAcreateserial -out "${ssl_crt}" -days 3650
 
       # avoid missing chain.crt file
       #[ ! -e "${ssl_dir}/${cn}.chain.crt" ] && ln -s "${ssl_dir}/${cn}.ca.crt" "${ssl_dir}/$cn.chain.crt"
