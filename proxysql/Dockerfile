@@ -10,11 +10,10 @@ ENV APP_NAME "proxysql"
 # default versions
 ARG tag_ver_major=2
 ARG tag_ver_minor=0
-ARG tag_ver_patch=2
+ARG tag_ver_patch=3
 ARG tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
 
 ENV PROXYSQL_VERSION=${tag_ver}
-#ENV TINI_VERSION=0.18.0
 
 ## install
 RUN set -ex \
@@ -29,10 +28,6 @@ RUN set -ex \
     net-tools \
     tini \
   && update-ca-certificates \
-  ## install tini
-#  && wget -q https://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb \
-#  && dpkg -i tini_$TINI_VERSION-amd64.deb \
-#  && rm -f tini_$TINI_VERSION-amd64.deb \
   ## install proxysql
 #  && wget -q https://github.com/sysown/proxysql/releases/download/v${PROXYSQL_VERSION}/proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
 #  && dpkg -i proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
