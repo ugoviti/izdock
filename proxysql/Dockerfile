@@ -10,8 +10,10 @@ ENV APP_NAME "proxysql"
 # default versions
 ARG tag_ver_major=2
 ARG tag_ver_minor=0
-ARG tag_ver_patch=3
+ARG tag_ver_patch=4
 ARG tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
+
+ARG build=false
 
 ENV PROXYSQL_VERSION=${tag_ver}
 
@@ -28,16 +30,21 @@ RUN set -ex \
     net-tools \
     tini \
   && update-ca-certificates \
+  && if [ "$build" = "false" ]; then \
+  : "---------- Download and Install official ProxySQL package ----------" \
   ## install proxysql
-#  && wget -q https://github.com/sysown/proxysql/releases/download/v${PROXYSQL_VERSION}/proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
-#  && dpkg -i proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
-#  && rm -f proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
+  && curl -fSL --connect-timeout 30 https://github.com/sysown/proxysql/releases/download/v${PROXYSQL_VERSION}/proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb -o proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
+  && dpkg -i proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
+  && rm -f proxysql_${PROXYSQL_VERSION}-debian9_amd64.deb \
+  ; fi \
   # cleanup system
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/* /tmp/*
 
 ## build
 RUN set -ex \
+  && if [ "$build" = "true" ]; then \
+  : "---------- Building ProxySQL From Source ----------" \
   && savedAptMark="$(apt-mark showmanual)" \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -75,7 +82,8 @@ RUN set -ex \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/usr/src/* /usr/src/* \
   \
   && : "---------- Show Builded Version ----------" \
-  && proxysql --version
+  && proxysql --version \
+  ; fi
 
 # exposed ports
 EXPOSE 3306/tcp 6032/tcp 6033/tcp
