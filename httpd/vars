@@ -1,7 +1,7 @@
-tag_ver_build=5
+tag_ver_build=29
 
 # default distribution IMAGE FROM
-image_from="debian:stretch-slim"
+image_from="debian:buster-slim"
 
 # http://www.apache.org/dist/httpd/
 HTTPD_VERSION_MAJOR=2

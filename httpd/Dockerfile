@@ -1,6 +1,6 @@
-ARG image_from=debian:stretch-slim
+ARG image_from=debian:buster-slim
 ARG image_from_httpd=httpd:2.4.39
-#ARG image_from_php=php:7.1.24
+#ARG image_from_php=php:7.1.30
 #ARG image_from_v8=alexmasterov/alpine-libv8:6.7
 
 FROM ${image_from_httpd} as httpd
@@ -14,12 +14,12 @@ ENV APP_DESCRIPTION "Apache HTTP Server"
 
 ## apps versions
 #ARG HTTPD_VERSION=
-ARG PHP_VERSION=7.3.4
-ARG PHP_SHA256=6fe79fa1f8655f98ef6708cde8751299796d6c1e225081011f4104625b923b83
+ARG PHP_VERSION=7.3.7
+ARG PHP_SHA256=ba067200ba649956b3a92ec8b71a6ed8ce8a099921212443c1bcf3260a29274c
 
 ## php modules version to compile
 # https://github.com/phpredis/phpredis/releases
-ARG REDIS_VERSION=4.3.0
+ARG REDIS_VERSION=5.0.1
 
 # https://github.com/php-memcached-dev/php-memcached/releases
 ARG MEMCACHED_VERSION=3.1.3
@@ -28,7 +28,7 @@ ARG MEMCACHED_VERSION=3.1.3
 ARG REALPATHTURBO_VERSION=2.0.0
 
 # https://github.com/xdebug/xdebug/releases
-ARG XDEBUG_VERSION=2.7.1
+ARG XDEBUG_VERSION=2.7.2
 
 # https://github.com/msgpack/msgpack-php/releases
 ARG MSGPACK_VERSION=2.0.3
@@ -40,13 +40,13 @@ ARG PHPIREDIS_VERSION=1.0.0
 ARG TARANTOOL_VERSION=0.3.2
 
 # https://github.com/mongodb/mongo-php-driver/releases
-ARG MONGODB_VERSION=1.5.3
+ARG MONGODB_VERSION=1.5.5
 
 # https://github.com/phpv8/php-v8/releases
 ARG PHPV8_VERSION=0.2.2
 
 ## default variables
-ENV TINI_VERSION=0.18.0
+#ENV TINI_VERSION=0.18.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 ENV PREFIX=/usr/local
@@ -87,13 +87,14 @@ RUN set -ex \
   && apt-get update && apt-get install -y --no-install-recommends curl ca-certificates apt-utils \
   && update-ca-certificates \
   # install tini as init container
-  && curl -fSL --connect-timeout 30 http://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb -o tini_$TINI_VERSION-amd64.deb \
-  && dpkg -i tini_$TINI_VERSION-amd64.deb \
-  && rm -f tini_$TINI_VERSION-amd64.deb \
+  #&& curl -fSL --connect-timeout 30 http://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb -o tini_$TINI_VERSION-amd64.deb \
+  #&& dpkg -i tini_$TINI_VERSION-amd64.deb \
+  #&& rm -f tini_$TINI_VERSION-amd64.deb \
   # upgrade the system
   && apt-get update && apt-get upgrade -y \
   # instal all needed packages
   && apt-get install -y --no-install-recommends \
+    tini \
     aspell \
     bash \
     runit \
@@ -118,8 +119,7 @@ RUN set -ex \
     libaprutil1 \
     libbsd0 \
     libc-client2007e \
-    libcurl3 \
-    libcurl3-gnutls \
+    libcurl4 \
     libedit2 \
     libenchant1c2a \
     libfontconfig1 \
@@ -130,8 +130,8 @@ RUN set -ex \
     libgmp10 \
     libgpm2 \
     libgsasl7 \
-    libhiredis0.13 \
-    libhunspell-1.4-0 \
+    libhiredis0.14 \
+    libhunspell-1.7-0 \
     libidn2-0 \
     libjbig0 \
     libjpeg62-turbo \
@@ -162,16 +162,16 @@ RUN set -ex \
     librtmp1 \
     libsasl2-2 \
     libsasl2-modules \
-    libsensors4 \
+    libsensors5 \
     libsnmp30 \
     libsnmp-base \
-    libsodium18 \
+    libsodium23 \
     libsqlite3-0 \
     libssh2-1 \
     libssl1.1 \
-    libtidy5 \
+    libtidy5deb1 \
     libtiff5 \
-    libunistring0 \
+    libunistring2 \
     libwebp6 \
     libwrap0 \
     libx11-6 \
@@ -185,7 +185,6 @@ RUN set -ex \
     libxslt1.1 \
     libzip4 \
     mime-support \
-#    dma \
     msmtp \
     openssl \
     psmisc \
@@ -202,6 +201,8 @@ RUN set -ex \
     webp \
     libmemcached11 \
     inotify-tools \
+#    dma \
+#    libcurl4-gnutls \
 #    default-mysql-client-core \
 #  && addgroup -g 82 -S www-data \
 #  && adduser -u 82 -S -D -h /var/cache/www-data -s /sbin/nologin -G www-data www-data \
@@ -228,22 +229,22 @@ COPY --from=httpd ${HTTPD_PREFIX} ${HTTPD_PREFIX}
 # dependencies required for running "phpize"
 # (see persistent deps below)
 ENV PHPIZE_DEPS \
-		autoconf \
-		dpkg-dev \
-		file \
-		g++ \
-		gcc \
-		libc-dev \
-		make \
-		pkg-config \
-		re2c \
-    bison
+  autoconf \
+  dpkg-dev \
+  file \
+  g++ \
+  gcc \
+  libc-dev \
+  make \
+  pkg-config \
+  re2c \
+  bison
 
 # compile php
 RUN set -ex \
   && savedAptMark="$(apt-mark showmanual)" \
   && apt-get update \
-	&& apt-get install -y --no-install-recommends \
+  && apt-get install -y --no-install-recommends \
     $PHPIZE_DEPS \
     build-essential \
     libaprutil1-dev \
@@ -254,7 +255,7 @@ RUN set -ex \
     libedit-dev \
     libenchant-dev \
     libfreetype6-dev \
-    libgcc-6-dev \
+    libgcc-8-dev \
     libgmp-dev \
     libhiredis-dev \
     libicu-dev \
@@ -273,7 +274,7 @@ RUN set -ex \
     libsodium-dev \
     libsqlite3-dev \
     libssl-dev \
-    libstdc++-6-dev \
+    libstdc++-8-dev \
     libtidy-dev \
     libxft-dev \
     libzip-dev \
@@ -312,6 +313,9 @@ RUN set -ex \
   && : "---------- FIX: libcurl not working ----------" \
   && cd /usr/include \
   && ln -s x86_64-linux-gnu/curl \
+  \
+  && : "---------- FIX: freetype-config missing in debian buster ----------" \
+  && ln -s /usr/bin/pkg-config /usr/bin/freetype-config \
   \
   && : "---------- PHP Build Flags ----------" \
   && export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" \
@@ -412,7 +416,7 @@ RUN set -ex \
     --with-enchant \
     --with-fpm-group=www-data \
     --with-fpm-user=www-data \
-    --with-freetype-dir \
+#    --with-freetype-dir=/usr/include/freetype2/ \
     --with-gd \
     --with-iconv \
     --with-libedit \
@@ -431,7 +435,7 @@ RUN set -ex \
     --with-readline \
     --with-system-ciphers \
     --with-xmlrpc \
-    --with-xpm-dir=no \
+    --with-xpm-dir \
     --with-xsl \
     --with-zlib \
     --without-pgsql \
