@@ -3,14 +3,16 @@ ARG image_from="debian:buster-slim"
 FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
-ENV APP_NAME "proxysql"
+ENV APP_NAME        "proxysql"
+ENV APP_DESCRIPTION "High-performance MySQL proxy"
+
 
 # URL: https://github.com/sysown/proxysql/releases
 
 # default versions
 ARG tag_ver_major=2
 ARG tag_ver_minor=0
-ARG tag_ver_patch=4
+ARG tag_ver_patch=5
 ARG tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
 
 ARG build=false
