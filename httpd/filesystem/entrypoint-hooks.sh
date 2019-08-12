@@ -145,7 +145,7 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
       # create the ssl dir if not exist
       [ ! -e "${ssl_dir}" ] && mkdir -p "${ssl_dir}"
 
-      # ssl domain files detection (FIXME: find a better way to discover the used files name. we are assuming that eevery certificate is located into different dir)
+      # ssl domain files detection (FIXME: find a better way to discover the used files name. we are assuming that every certificate is located into different dir)
       # detect the SSLCertificateFile
       ssl_crt="$(grep -H -r "^.*SSLCertificateFile ${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
 
