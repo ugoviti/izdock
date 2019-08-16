@@ -1,4 +1,4 @@
-ARG image_from=haproxy:1.9.6
+ARG image_from=haproxy:2.0.4
 FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
@@ -6,7 +6,6 @@ MAINTAINER Ugo Viti <ugo.viti@initzero.it>
 ENV APP_NAME        "haproxy"
 ENV APP_DESCRIPTION "High Performance TCP/HTTP Load Balancer"
 
-ENV TINI_VERSION 0.18.0
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN set -ex \
@@ -15,15 +14,12 @@ RUN set -ex \
     ca-certificates \
   " \
   && apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+  tini \
   procps \
   net-tools \
   runit \
   && apt-get install -y --no-install-recommends -V $buildDeps \
   && update-ca-certificates \
-  # install tini as init container
-  && curl -fSL --connect-timeout 10 http://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb -o tini_$TINI_VERSION-amd64.deb \
-  && dpkg -i tini_$TINI_VERSION-amd64.deb \
-  && rm -f tini_$TINI_VERSION-amd64.deb \
   # manage log output
   && ln -sf /var/log /var/log/haproxy.log \
   # cleanup system
