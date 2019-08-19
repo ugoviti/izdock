@@ -86,6 +86,7 @@ remove_tags
 upload_container() {
   set -xe
   # upload latest version to docker
+  # FIXME: temporary added --max-concurrent-uploads=1 to /etc/docker/daemon.json because https://github.com/docker/for-linux/issues/711
   [ "$upload_docker" = 1 ] && docker push $repo_docker/$container
   [ "$upload_gcloud" = 1 ] && gcloud docker -- push gcr.io/$repo_gcloud/$container
   set +xe
