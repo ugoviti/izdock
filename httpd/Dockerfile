@@ -1,5 +1,5 @@
 ARG image_from=debian:buster-slim
-ARG image_from_httpd=httpd:2.4.39
+ARG image_from_httpd=httpd:2.4.41
 #ARG image_from_php=php:7.1.30
 #ARG image_from_v8=alexmasterov/alpine-libv8:6.7
 
@@ -14,12 +14,12 @@ ENV APP_DESCRIPTION "Apache HTTP Server"
 
 ## apps versions
 #ARG HTTPD_VERSION=
-ARG PHP_VERSION=7.3.7
-ARG PHP_SHA256=ba067200ba649956b3a92ec8b71a6ed8ce8a099921212443c1bcf3260a29274c
+ARG PHP_VERSION=7.3.8
+ARG PHP_SHA256=f6046b2ae625d8c04310bda0737ac660dc5563a8e04e8a46c1ee24ea414ad5a5
 
 ## php modules version to compile
 # https://github.com/phpredis/phpredis/releases
-ARG REDIS_VERSION=5.0.1
+ARG REDIS_VERSION=5.0.2
 
 # https://github.com/php-memcached-dev/php-memcached/releases
 ARG MEMCACHED_VERSION=3.1.3
@@ -46,7 +46,6 @@ ARG MONGODB_VERSION=1.5.5
 ARG PHPV8_VERSION=0.2.2
 
 ## default variables
-#ENV TINI_VERSION=0.18.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 ENV PREFIX=/usr/local
@@ -86,10 +85,6 @@ RUN set -ex \
   # install curl and update ca certificates
   && apt-get update && apt-get install -y --no-install-recommends curl ca-certificates apt-utils \
   && update-ca-certificates \
-  # install tini as init container
-  #&& curl -fSL --connect-timeout 30 http://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb -o tini_$TINI_VERSION-amd64.deb \
-  #&& dpkg -i tini_$TINI_VERSION-amd64.deb \
-  #&& rm -f tini_$TINI_VERSION-amd64.deb \
   # upgrade the system
   && apt-get update && apt-get upgrade -y \
   # instal all needed packages
