@@ -12,7 +12,7 @@ ENV APP_DESCRIPTION "High-performance MySQL proxy"
 # default versions
 ARG tag_ver_major=2
 ARG tag_ver_minor=0
-ARG tag_ver_patch=5
+ARG tag_ver_patch=6
 ARG tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
 
 ARG build=false
