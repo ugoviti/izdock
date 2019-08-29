@@ -147,14 +147,14 @@ if [ "$HTTPD_ENABLED" = "true" ]; then
 
       # ssl domain files detection (FIXME: find a better way to discover the used files name. we are assuming that every certificate is located into different dir)
       # detect the SSLCertificateFile
-      ssl_crt="$(grep -H -r "^.*SSLCertificateFile ${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
+      ssl_crt="$(grep -H -r "^.*SSLCertificateFile.*${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
 
       # detect the SSLCertificateKeyFile
-      ssl_key="$(grep -H -r "^.*SSLCertificateKeyFile ${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
+      ssl_key="$(grep -H -r "^.*SSLCertificateKeyFile.*${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
       ssl_csr="${ssl_dir}/${cn}.csr"
 
       # detect the SSLCertificateKeyFile
-      ssl_chain_crt="$(grep -H -r "^.*SSLCertificateChainFile ${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
+      ssl_chain_crt="$(grep -H -r "^.*SSLCertificateChainFile.*${ssl_dir}/" ${HTTPD_CONF_DIR}/*.d/*.conf | awk '{print $3}')"
       ssl_chain_key="${ssl_dir}/${cn}.chain.key"
       ssl_chain_csr="${ssl_dir}/${cn}.chain.csr"
 
