@@ -1,0 +1,9 @@
+version: '3'
+services:
+  inde:
+    build: .
+    ports:
+      - "8081:8081"
+      - "8082:8082"
+    volumes:
+      - ./IDServer/appDirectory/:/opt/inde/IDServer/appDirectory/

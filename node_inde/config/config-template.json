@@ -1,0 +1,64 @@
+{
+  "cl": "Node.Config",
+  "name": "#CONFIG_NAME#",
+  "domain": "#DOMAIN#",
+  "protocol": "http",
+  "alias": "#ALIAS#",
+  "serverType": "#SERVER_TYPE#",
+  "portHttp": 8081,
+  "portHttps": 8082,
+  "SSLCert": "#SSL_CERT#",
+  "SSLKey": "#SSL_KEY#",
+  "SSLCABundles": [
+    "#SSL_BUNDLE#"
+  ],
+  "directory": "/opt/inde/IDServer/data",
+  "consoleURL": "",
+  "configS3": {
+    "accessKeyId": "",
+    "secretAccessKey": "",
+    "region": ""
+  },
+  "configGCloudStorage": {
+    "keyFilename": "",
+    "projectId": ""
+  },
+  "dbPort": "5432",
+  "dbAddress": "",
+  "dbUser": "",
+  "dbPassword": "",
+  "timerTokenConsole": 60000,
+  "handleException": true,
+  "minify": true,
+  "timeBackup": 50,
+  "daysBackups": 30,
+  "numMinBackups": 5,
+  "appDirectory": "/opt/inde/IDServer/appDirectory",
+  "defaultApp":"#APP_NAME#",
+  "services": "sync,cc",
+  "maxAppUsers": 1000,
+  "minAppUsersPerWorker": 1000,
+  "maxAppWorkers": 1,
+  "users": [
+    {
+      "cl": "Node.User",
+      "userName": "manager",
+      "dbPassword": "12345",
+      "projects": [],
+      "databases": [
+      ],
+  "apps": [
+        {
+          "cl": "Node.App",
+          "name": "#APP_NAME#",
+          "date": "2018-08-13T11:46:49.429Z",
+          "stopped": false,
+          "maxAppUsers":1000,
+          "minAppUsersPerWorker":1000,
+          "maxAppWorkers":1,
+          "customWorkerConf": []
+        }
+      ]
+    }
+  ]
+}
