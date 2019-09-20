@@ -2,9 +2,9 @@
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
 # Supported tags
-* `2.4.39-php7.3.4-BUILD, 2.4.39-php7.3.4, 2.4-php7.3, php7.3, 2, 2.4, 2.4.38, latest`
-* `2.4.39-php7.2.17-BUILD, 2.4.39-php7.2.17, 2.4-php7.2, php7.2`
-* `2.4.39-php7.1.28-BUILD, 2.4.39-php7.1.28, 2.4-php7.1, php7.1`
+* `2.4.41-php7.3.9-BUILD, 2.4.41-php7.3.9, 2.4-php7.3, php7.3, 2, 2.4, 2.4.38, latest`
+* `2.4.41-php7.2.22-BUILD, 2.4.41-php7.2.22, 2.4-php7.2, php7.2`
+* `2.4.41-php7.1.32-BUILD, 2.4.41-php7.1.32, 2.4-php7.1, php7.1`
 * `2.4.39-php5.6.40-BUILD, 2.4.39-php5.6.40, 2.4-php5.6, php5.6`
 
 Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
@@ -15,9 +15,9 @@ Where **BUILD** is the build number (look into project [Tags](tags/) page to dis
 # Features
 - Small image footprint
 - Based on official [httpd](/_/httpd/) and [Debian Stretch-Slim](/_/debian/) image
-- OnDemand configurable Apache MPM Worker (use **event** or **worker** for best scalability and memory optimization, PHP get automatically disabled because is not ZTS compiled). The default Apache MPM Worker is **prefork**
+- OnDemand configurable Apache MPM Worker (use **event** or **worker** for best scalability and memory optimization, PHP get automatically disabled because is not ZTS compiled). The default Apache MPM Worker is **prefork** (if prefork is used, mod_php will be enabled by default)
 - Build from scratch PHP as NTS (Not Threat Safe) and many useful php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
-- Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts
+- Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts using sendmail() function
 - Automatically generate Self Signed SSL certificates if not found into configuration to avoid apache startup problems
 - Integrated PHP-FPM support using runit service manager
 - Many customizable variables to use
