@@ -244,7 +244,7 @@ if [ -z "$options" ]; then
 	  #sh) eval DVTM_TERM=rxvt dvtm $(kubectl get nodes | grep -v ^NAME | cut -d " " -f 1 | while read node ; do echo -n "\"gcloud compute ssh $node ; read\" "; done) && exit 0 ;;
 	  sh) eval DVTM_TERM=rxvt dvtm $(kubectl get nodes | grep -v ^NAME | cut -d " " -f 1 | while read node ; do echo -n "\"gcloud compute ssh $node\" "; done) && exit 0 ;;
 	  top) eval DVTM_TERM=rxvt dvtm $(kubectl get nodes | grep -v ^NAME | cut -d " " -f 1 | while read node ; do echo -n "\"gcloud compute ssh $node -- top ; read\" "; done) && exit 0 ;;
-	  log) eval DVTM_TERM=rxvt dvtm $(kubectl get nodes | grep -v ^NAME | cut -d " " -f 1 | while read node ; do echo -n "\"gcloud compute ssh $node -- sudo journalctl -f -u kubelet | grep -v -e '/stats/summary/:' -e '/healthz:' -e 'Discovered runtime cgroups name:' -e 'cloud_request_manager.go' ; read\" "; done) && exit 0 ;;
+	  log) eval DVTM_TERM=rxvt dvtm $(kubectl get nodes | grep -v ^NAME | cut -d " " -f 1 | while read node ; do echo -n "\"gcloud compute ssh $node -- sudo journalctl -f -n 0 -u kubelet | grep -v -e '/stats/summary/:' -e '/healthz:' -e 'Discovered runtime cgroups name:' -e 'cloud_request_manager.go' ; read\" "; done) && exit 0 ;;
 	  res) kres && exit 0 ;;
 	  cpu) kcpu && exit 0 ;;
 	  mem) kmem && exit 0 ;;
