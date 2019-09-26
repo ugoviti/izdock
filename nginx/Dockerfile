@@ -1,6 +1,6 @@
-ARG image_from=nginx:1.14.2
+ARG image_from=nginx:1.16.1
 
-FROM golang:1.11.2-stretch AS gcsfuse
+FROM golang:1.12.10-buster AS gcsfuse
 ENV GOPATH /go
 RUN go get -u github.com/googlecloudplatform/gcsfuse
 
@@ -22,13 +22,13 @@ ENV APP_DATA_DEFAULT      "/var/www/localhost/htdocs"
 ENV APP_LOGS_DEFAULT      "/var/log/nginx"
 
 ## default variables
-ENV TINI_VERSION=0.18.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 ## install
 RUN set -ex \
   && apt-get update && apt-get upgrade -y \
   && apt-get install -y --no-install-recommends \
+  tini \
   runit \
   bash \
   procps \
@@ -37,10 +37,6 @@ RUN set -ex \
   inotify-tools \
   ca-certificates \
   && update-ca-certificates \
-  # install tini as init container
-  && curl -fSL --connect-timeout 30 http://github.com/krallin/tini/releases/download/v$TINI_VERSION/tini_$TINI_VERSION-amd64.deb -o tini_$TINI_VERSION-amd64.deb \
-  && dpkg -i tini_$TINI_VERSION-amd64.deb \
-  && rm -f tini_$TINI_VERSION-amd64.deb \
   # post install customizazions: add user nginx to tomcat group, used with initzero backend integration
   && groupadd -g 91 tomcat && gpasswd -a www-data tomcat \
   && mkdir -p /var/www/localhost/htdocs \

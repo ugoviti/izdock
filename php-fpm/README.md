@@ -2,18 +2,18 @@
 Production ready PHP-FPM (FastCGI Process Manager) image based on Debian (Slim) Linux + izsendmail for MTA logging
 
 # Supported tags
--	`7.3.2-BUILD`, `7.3.2`, `7.3`, `7`, `latest`
--	`7.2.15-BUILD`, `7.2.15`, `7.2`
--	`7.1.26-BUILD`, `7.1.26`, `7.1`
--	`5.6.40-BUILD`, `5.6.40`, `5.6`, `5`
+-	`7.3.X-BUILD`, `7.3.X`, `7.3`, `7`, `latest`
+-	`7.2.X-BUILD`, `7.2.X`, `7.2`
+-	`7.1.X-BUILD`, `7.1.X`, `7.1`
+-	`5.6.X-BUILD`, `5.6.X`, `5.6`, `5`
 
-Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
+Where **X** is the patch version number, and **BUILD** is the build number (look into project [Tags](/repository/docker/izdock/php-fpm/tags/) page to discover the latest versions)
 
 # Dockerfile
 - https://github.com/ugoviti/izdock/blob/master/php-fpm/Dockerfile
 
 # Features
-- Small image footprint (all images are based on [izdock httpd image](/r/izdock/httpd/))
+- Small image footprint (all images are based on [izdock httpd image](/repository/docker/izdock/httpd))
 - The Apache HTTPD Web Server is present but unused from this image
 - You can use `izdock/php-fpm` as sidecar image (Docker Compose or Kubernetes) for NGINX or Apache configured with MPM Event and Reverse Proxy for PHP pages
 - Build from scratch PHP interpreter with all modules included, plus external modules (igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool)

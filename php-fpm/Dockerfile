@@ -1,4 +1,4 @@
-ARG image_from="izdock/httpd:php7.2"
+ARG image_from="izdock/httpd:php7.3"
 
 #FROM ${image_from_httpd} as httpd
 #RUN rm -rf /usr/local/apache2/ /local/php/bin/phpdbg
@@ -7,11 +7,16 @@ FROM ${image_from}
 
 MAINTAINER Ugo Viti <ugo.viti@initzero.it>
 
-ENV APP_NAME php-fpm
+# custom app configuration variables
+ENV APP_NAME              "php-fpm"
+ENV APP_DESCRIPTION       "PHP-FPM (FastCGI Process Manager)"
+ENV APP_CONF              ""
+ENV APP_CONF_PHP          ""
+ENV APP_DATA              ""
+ENV APP_LOGS              ""
 
 ENV HTTPD_ENABLED false
 ENV PHP_ENABLED   true
-
 ENV PHP_PREFIX /usr/local/php
 
 WORKDIR /var/www/html
