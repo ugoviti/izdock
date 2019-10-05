@@ -5,7 +5,6 @@ Production ready PHP-FPM (FastCGI Process Manager) image based on Debian (Slim) 
 -	`7.3.X-BUILD`, `7.3.X`, `7.3`, `7`, `latest`
 -	`7.2.X-BUILD`, `7.2.X`, `7.2`
 -	`7.1.X-BUILD`, `7.1.X`, `7.1`
--	`5.6.X-BUILD`, `5.6.X`, `5.6`, `5`
 
 Where **X** is the patch version number, and **BUILD** is the build number (look into project [Tags](/repository/docker/izdock/php-fpm/tags/) page to discover the latest versions)
 
