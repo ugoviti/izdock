@@ -2,12 +2,12 @@
 Production ready Apache HTTPD Web Server + mod_php + izsendmail for MTA logging
 
 # Supported tags
-* `2.4.41-php7.3.9-BUILD, 2.4.41-php7.3.9, 2.4-php7.3, php7.3, 2, 2.4, 2.4.38, latest`
-* `2.4.41-php7.2.22-BUILD, 2.4.41-php7.2.22, 2.4-php7.2, php7.2`
-* `2.4.41-php7.1.32-BUILD, 2.4.41-php7.1.32, 2.4-php7.1, php7.1`
-* `2.4.39-php5.6.40-BUILD, 2.4.39-php5.6.40, 2.4-php5.6, php5.6`
+* `2.4.41-php7.3.X-BUILD, 2.4.41-php7.3.X, 2.4-php7.3, php7.3, 2, 2.4, 2.4.41, latest`
+* `2.4.41-php7.2.X-BUILD, 2.4.41-php7.2.X, 2.4-php7.2, php7.2`
+* `2.4.41-php7.1.X-BUILD, 2.4.41-php7.1.X, 2.4-php7.1, php7.1`
+* `2.4.41-php5.6.X-BUILD, 2.4.41-php5.6.X, 2.4-php5.6, php5.6`
 
-Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
+Where **X** is the patch version number, and **BUILD** is the build number (look into project [Tags](/repository/docker/izdock/httpd/tags/) page to discover the latest versions)
 
 # Dockerfile
 - https://github.com/ugoviti/izdock/blob/master/httpd/Dockerfile
