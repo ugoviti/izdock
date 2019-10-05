@@ -14,8 +14,8 @@ ENV APP_DESCRIPTION "Apache HTTP Server"
 
 ## apps versions
 #ARG HTTPD_VERSION=
-ARG PHP_VERSION=7.3.9
-ARG PHP_SHA256=4007f24a39822bef2805b75c625551d30be9eeed329d52eb0838fa5c1b91c1fd
+ARG PHP_VERSION=7.3.10
+ARG PHP_SHA256=42f00a15419e05771734b7159c8d39d639b8a5a6770413adfa2615f6f923d906
 
 ## php modules version to compile
 # https://github.com/phpredis/phpredis/releases
