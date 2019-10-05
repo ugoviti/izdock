@@ -2,9 +2,9 @@
 Production ready NGINX Web Server + configuration inotify watch for automatic daemon reload
 
 # Supported tags
--	`1.14.2`, `1.14`, `1`, `latest`
+-	`1.16.X`, `1.16`, `1`, `latest`
 
-Where **BUILD** is the build number (look into project [Tags](tags/) page to discover the latest BUILD NUMBER)
+Where **X** is the patch version number, and **BUILD** is the build number (look into project [Tags](/repository/docker/izdock/nginx/tags/) page to discover the latest versions)
 
 # Dockerfile
 - https://github.com/ugoviti/izdock/blob/master/nginx/Dockerfile
