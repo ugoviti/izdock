@@ -13,7 +13,7 @@ Where **X** is the patch version number, and **BUILD** is the build number (look
 
 # Features
 - Small image footprint
-- Based on official [httpd](/_/httpd/) and [Debian Stretch-Slim](/_/debian/) image
+- Based on official [httpd](/_/httpd/) and [Debian Buster-Slim](/_/debian/) image
 - OnDemand configurable Apache MPM Worker (use **event** or **worker** for best scalability and memory optimization, PHP get automatically disabled because is not ZTS compiled). The default Apache MPM Worker is **prefork** (if prefork is used, mod_php will be enabled by default)
 - Build from scratch PHP as NTS (Not Threat Safe) and many useful php modules included, plus external modules (`igbinary apcu msgpack opcache memcached redis xdebug phpiredis realpath_turbo tarantool`)
 - Included izsendmail bash script as wrapper for `msmtp` used for smarthost delivery of mail messages sent from PHP scripts using sendmail() function
