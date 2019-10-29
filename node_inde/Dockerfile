@@ -1,5 +1,15 @@
 FROM nikolaik/python-nodejs:python3.7-nodejs10
 
+MAINTAINER Christopher Viola <christopher.viola@initzero.it>
+ENV APP_NAME        "node_inde"
+ENV APP_DESCRIPTION "NODE InDe"
+
+# default versions
+#ARG tag_ver_major=1
+#ARG tag_ver_minor=0
+#ARG tag_ver_patch=0
+#ARG tag_ver=${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}
+
 ARG config_name="default"
 ARG domain="initzero.it"
 ARG alias="app.initzero.it"
