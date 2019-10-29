@@ -43,14 +43,14 @@ WORKDIR /opt/inde/
 
 COPY . .
 
-RUN sed "s|#CONFIG_NAME#|$CONFIG_NAME|g" config/config-template.json > config/config.json
-RUN sed -i "s|#DOMAIN#|$DOMAIN|g" config/config.json
-RUN sed -i "s|#ALIAS#|$ALIAS|g" config/config.json
-RUN sed -i "s|#SERVER_TYPE#|$SERVER_TYPE|g" config/config.json
-RUN sed -i "s|#SSL_CERT#|$SSL_CERT|g" config/config.json
-RUN sed -i "s|#SSL_KEY#|$SSL_KEY|g" config/config.json
-RUN sed -i "s|#SSL_BUNDLE#|$SSL_BUNDLE|g" config/config.json
-RUN sed -i "s|#APP_NAME#|$APP_NAME|g" config/config.json
+RUN sed "s|#CONFIG_NAME#|$CONFIG_NAME|g" config/config-template.json > config/config.json \
+  && sed -i "s|#DOMAIN#|$DOMAIN|g" config/config.json \
+  && sed -i "s|#ALIAS#|$ALIAS|g" config/config.json \
+  && sed -i "s|#SERVER_TYPE#|$SERVER_TYPE|g" config/config.json \
+  && sed -i "s|#SSL_CERT#|$SSL_CERT|g" config/config.json \
+  && sed -i "s|#SSL_KEY#|$SSL_KEY|g" config/config.json \
+  && sed -i "s|#SSL_BUNDLE#|$SSL_BUNDLE|g" config/config.json \
+  && sed -i "s|#APP_NAME#|$APP_NAME|g" config/config.json
 
 WORKDIR /opt/inde/IDServer
 

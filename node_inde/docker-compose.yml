@@ -6,4 +6,4 @@ services:
       - "8081:8081"
       - "8082:8082"
     volumes:
-      - ./IDServer/appDirectory/:/opt/inde/IDServer/appDirectory/
+      - ./IDServer/appDirectory/apps:/opt/inde/IDServer/appDirectory/apps

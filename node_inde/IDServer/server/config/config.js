@@ -738,11 +738,13 @@ Node.Config.prototype.processRun = function (req, res)
   }
   //
   // If the HOST is not valid, don't reply
+  /*
   if (!this.getHostFromReq(req)) {
     this.logger.log("WARN", "Bad HOST", "Config.processRun",
             {meth: req.method, url: req.originalUrl, host: req.headers.host, remoteAddress: req.connection.remoteAddress});
     return res.status(500).end("Invalid HOST parameter");
   }
+  */
   //
   if (isIDE) {     // IDE
     sid = req.params.sid;
