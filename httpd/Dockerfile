@@ -14,21 +14,21 @@ ENV APP_DESCRIPTION "Apache HTTP Server"
 
 ## apps versions
 #ARG HTTPD_VERSION=
-ARG PHP_VERSION=7.3.10
-ARG PHP_SHA256=42f00a15419e05771734b7159c8d39d639b8a5a6770413adfa2615f6f923d906
+ARG PHP_VERSION=7.3.11
+ARG PHP_SHA256=657cf6464bac28e9490c59c07a2cf7bb76c200f09cfadf6e44ea64e95fa01021
 
 ## php modules version to compile
 # https://github.com/phpredis/phpredis/releases
-ARG REDIS_VERSION=5.0.2
+ARG REDIS_VERSION=5.1.0
 
 # https://github.com/php-memcached-dev/php-memcached/releases
-ARG MEMCACHED_VERSION=3.1.3
+ARG MEMCACHED_VERSION=3.1.4
 
 # https://github.com/Whissi/realpath_turbo/releases
 ARG REALPATHTURBO_VERSION=2.0.0
 
 # https://github.com/xdebug/xdebug/releases
-ARG XDEBUG_VERSION=2.7.2
+ARG XDEBUG_VERSION=2.8.0
 
 # https://github.com/msgpack/msgpack-php/releases
 ARG MSGPACK_VERSION=2.0.3
@@ -40,7 +40,7 @@ ARG PHPIREDIS_VERSION=1.0.0
 ARG TARANTOOL_VERSION=0.3.2
 
 # https://github.com/mongodb/mongo-php-driver/releases
-ARG MONGODB_VERSION=1.5.5
+ARG MONGODB_VERSION=1.6.0
 
 # https://github.com/phpv8/php-v8/releases
 ARG PHPV8_VERSION=0.2.2
@@ -66,19 +66,17 @@ ENV PHP_MODULES_ENABLED="redis"
 # Apache vars
 ENV DOCUMENTROOT=/var/www/localhost/htdocs
 
-
-## ================ ALPINE INSTALL LIBRARIES AND TOOLS ================ ##
 # install gcsfuse
 #COPY --from=gcsfuse /go/bin/gcsfuse ${PREFIX}/bin/
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
 RUN set -ex; \
-	{ \
-		echo 'Package: php*'; \
-		echo 'Pin: release *'; \
-		echo 'Pin-Priority: -1'; \
-	} > /etc/apt/preferences.d/no-debian-php
+  { \
+  echo 'Package: php*'; \
+  echo 'Pin: release *'; \
+  echo 'Pin-Priority: -1'; \
+  } > /etc/apt/preferences.d/no-debian-php
 
 ## install apache/php needed libraries and persistent / runtime deps
 RUN set -ex \

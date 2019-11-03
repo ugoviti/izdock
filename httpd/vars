@@ -1,4 +1,4 @@
-tag_ver_build=19
+tag_ver_build=29
 
 # default distribution IMAGE FROM
 image_from="debian:buster-slim"
@@ -37,7 +37,6 @@ tag_suffix="-php${PHP_VERSION}"
 
 # image tags for builded image
 tags=""
-tags+=" ${tag_ver}-${tag_ver_build}"
 tags+=" ${tag_ver_major}.${tag_ver_minor}-php${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}"
 tags+=" ${tag_ver}-php${PHP_VERSION}"
 tags+=" ${tag_ver}-php${PHP_VERSION}-${tag_ver_build}"
@@ -51,6 +50,7 @@ if [ "$tag_latest" = "yes" ]; then
   tags+=" ${tag_ver_major}"
   tags+=" ${tag_ver_major}.${tag_ver_minor}"
   tags+=" ${tag_ver}"
+  tags+=" ${tag_ver}-${tag_ver_build}"
 fi
 
 args="image_from=$image_from image_from_httpd=$image_from_httpd HTTPD_VERSION=$HTTPD_VERSION PHP_VERSION=$PHP_VERSION PHP_SHA256=$PHP_SHA256 "
