@@ -1,9 +1,21 @@
 version: '3'
 services:
-  inde:
-    build: .
+## NODEJS
+  wms-nodejs:
+    image: izdock/node_inde:latest
     ports:
       - "8081:8081"
       - "8082:8082"
     volumes:
-      - ./IDServer/appDirectory/apps:/opt/inde/IDServer/appDirectory/apps
+      #- ./config/nodejs/:/opt/inde/config/
+      - ./data/nodejs/IDServer/appDirectory/apps:/opt/inde/IDServer/appDirectory/apps
+    restart: always
+    networks:
+      wms-network:
+        aliases:
+          - nodejs
+    stop_grace_period: 30s
+    labels:
+      it.initzero.description: "CloudWMS Application Server NodeJS"
+      it.initzero.company: "InitZero S.r.l."
+      it.initzero.component: "wms-nodejs"
