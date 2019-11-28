@@ -24,15 +24,15 @@ ENV APP_USR               "indert"
 # node application name
 ENV NODE_APP_NAME   "inde-self"
 # node deploy home
-ENV NODE_APP_HOME   "${APP_DATA}/${NODE_APP_NAME}"
+ENV NODE_APP_HOME   ""
 # node application server directory
-ENV NODE_SERVER_DIR "${NODE_APP_HOME}/server"
+ENV NODE_SERVER_DIR ""
 # node application directory
-ENV NODE_APP_DIR    "${NODE_APP_HOME}/appDirectory"
+ENV NODE_APP_DIR    ""
 # node application data directory
-ENV NODE_DATA_DIR   "${NODE_APP_HOME}/data"
+ENV NODE_DATA_DIR   ""
 # node application data directory
-ENV NODE_LOG_DIR    "${NODE_APP_HOME}/log"
+ENV NODE_LOG_DIR    ""
 
 ENV CONFIG_NAME     "default"
 ENV DOMAIN          "example.com"
@@ -82,6 +82,7 @@ RUN set -ex && \
   cd .. && \
   mv public_html ${APP_DATA}/cloud-connector && \
   : "---------- Finalizing Config ----------" && \
+  chown -R ${APP_USR}:${APP_USR} ${APP_HOME} && \
   rm -rf /usr/src/* && \
   : "---------- END Installing InDe Apps ----------"
 
@@ -90,17 +91,16 @@ VOLUME ["APP_HOME"]
 
 EXPOSE 8081/tcp 8082/tcp
 
-# add files to container
-ADD Dockerfile filesystem VERSION README.md /
+# add local files to container
+ADD filesystem /
 
-# reset file permissions
-RUN set -ex && \
-  chown -R ${APP_USR}:${APP_USR} ${APP_HOME}
-
+# add local files to container
+ADD Dockerfile VERSION README.md /
+  
 # become unprivileged user
-#USER ${APP_USR}
+USER ${APP_USR}
 
-WORKDIR "${NODE_SERVER_DIR}"
+WORKDIR "${APP_HOME}"
 
 # start the container process
 ENTRYPOINT ["/entrypoint.sh"]

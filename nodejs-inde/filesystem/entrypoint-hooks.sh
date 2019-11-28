@@ -23,7 +23,7 @@
 
 ## configure nodejs server
 cfgNodeJs() {
-  cp "${APP_CONF}/config-template.json" "${APP_CONF}/config.json"
+  cp "${APP_DATA}/config-template.json" "${APP_CONF}/config.json"
 
   sed "s|#NODE_APP_NAME#|$NODE_APP_NAME|g"    -i "${APP_CONF}/config.json"
   sed "s|#NODE_APP_DIR#|$NODE_APP_DIR|g"      -i "${APP_CONF}/config.json"
