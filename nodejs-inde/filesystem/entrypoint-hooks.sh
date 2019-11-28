@@ -16,6 +16,7 @@
 : ${SSL_BUNDLE:=""}
 : ${NODE_APP_NAME:=inde-self}
 : ${NODE_APP_HOME:=$APP_DATA/$NODE_APP_NAME}
+: ${NODE_SERVER_CONF:=$APP_CONF/config.json}
 : ${NODE_SERVER_DIR:=$NODE_APP_HOME/server}
 : ${NODE_APP_DIR:=$NODE_APP_HOME/appDirectory}
 : ${NODE_DATA_DIR:=$NODE_APP_HOME/data}
@@ -23,26 +24,26 @@
 
 ## configure nodejs server
 cfgNodeJs() {
-  cp "${APP_DATA}/config-template.json" "${APP_CONF}/config.json"
+  cp "${APP_DATA}/config-template.json" "${NODE_SERVER_CONF}"
 
-  sed "s|#NODE_APP_NAME#|$NODE_APP_NAME|g"    -i "${APP_CONF}/config.json"
-  sed "s|#NODE_APP_DIR#|$NODE_APP_DIR|g"      -i "${APP_CONF}/config.json"
-  sed "s|#NODE_DATA_DIR#|$NODE_DATA_DIR|g"    -i "${APP_CONF}/config.json"
-  sed "s|#NODE_LOG_DIR#|$NODE_LOG_DIR|g"      -i "${APP_CONF}/config.json"
-  sed "s|#CONFIG_NAME#|$CONFIG_NAME|g"        -i "${APP_CONF}/config.json"
-  sed "s|#DOMAIN#|$DOMAIN|g"                  -i "${APP_CONF}/config.json"
-  sed "s|#ALIAS#|$ALIAS|g"                    -i "${APP_CONF}/config.json"
-  sed "s|#SERVER_TYPE#|$SERVER_TYPE|g"        -i "${APP_CONF}/config.json"
-  sed "s|#SSL_CERT#|$SSL_CERT|g"              -i "${APP_CONF}/config.json"
-  sed "s|#SSL_KEY#|$SSL_KEY|g"                -i "${APP_CONF}/config.json"
-  sed "s|#SSL_BUNDLE#|$SSL_BUNDLE|g"          -i "${APP_CONF}/config.json"
+  sed "s|#NODE_APP_NAME#|$NODE_APP_NAME|g"    -i "${NODE_SERVER_CONF}"
+  sed "s|#NODE_APP_DIR#|$NODE_APP_DIR|g"      -i "${NODE_SERVER_CONF}"
+  sed "s|#NODE_DATA_DIR#|$NODE_DATA_DIR|g"    -i "${NODE_SERVER_CONF}"
+  sed "s|#NODE_LOG_DIR#|$NODE_LOG_DIR|g"      -i "${NODE_SERVER_CONF}"
+  sed "s|#CONFIG_NAME#|$CONFIG_NAME|g"        -i "${NODE_SERVER_CONF}"
+  sed "s|#DOMAIN#|$DOMAIN|g"                  -i "${NODE_SERVER_CONF}"
+  sed "s|#ALIAS#|$ALIAS|g"                    -i "${NODE_SERVER_CONF}"
+  sed "s|#SERVER_TYPE#|$SERVER_TYPE|g"        -i "${NODE_SERVER_CONF}"
+  sed "s|#SSL_CERT#|$SSL_CERT|g"              -i "${NODE_SERVER_CONF}"
+  sed "s|#SSL_KEY#|$SSL_KEY|g"                -i "${NODE_SERVER_CONF}"
+  sed "s|#SSL_BUNDLE#|$SSL_BUNDLE|g"          -i "${NODE_SERVER_CONF}"
 }
 
 ## application hooks
 hooks_always() {
   echo "=> Executing $APP_DESCRIPTION configuration hooks 'always'..."
 
-  if [ -e "${APP_CONF}/config.json" ]; then
+  if [ -e "${NODE_SERVER_CONF}" ]; then
     echo "config file '${APP_CONF}/config.json' detected... skipping reconfiguration"
    else
     echo "no config file '${APP_CONF}/config.json' detected... running reconfiguration"

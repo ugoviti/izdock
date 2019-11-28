@@ -22,17 +22,19 @@ ENV APP_DATA              "${APP_DATA_DEFAULT}"
 ENV APP_USR               "indert"
 
 # node application name
-ENV NODE_APP_NAME   "inde-self"
+ENV NODE_APP_NAME    "inde-self"
 # node deploy home
-ENV NODE_APP_HOME   ""
+ENV NODE_APP_HOME    ""
 # node application server directory
-ENV NODE_SERVER_DIR ""
+ENV NODE_SERVER_DIR  ""
+# node application server configuration
+ENV NODE_SERVER_CONF ""
 # node application directory
-ENV NODE_APP_DIR    ""
+ENV NODE_APP_DIR     ""
 # node application data directory
-ENV NODE_DATA_DIR   ""
+ENV NODE_DATA_DIR    ""
 # node application data directory
-ENV NODE_LOG_DIR    ""
+ENV NODE_LOG_DIR     ""
 
 ENV CONFIG_NAME     "default"
 ENV DOMAIN          "example.com"
@@ -87,7 +89,7 @@ RUN set -ex && \
   : "---------- END Installing InDe Apps ----------"
 
 # define volumes
-VOLUME ["APP_HOME"]
+VOLUME ["${APP_HOME}","${APP_CONF}"]
 
 EXPOSE 8081/tcp 8082/tcp
 

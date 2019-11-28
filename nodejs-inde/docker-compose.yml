@@ -1,7 +1,7 @@
 version: '3'
 services:
 ## NODEJS
-  wms-nodejs-inde-self:
+  inde-self:
     image: izdock/nodejs-inde:10.17.0
     restart: always
     stop_grace_period: 30s
@@ -15,45 +15,55 @@ services:
       - SSL_BUNDLE=/opt/inde/ssl/app.initzero.it_bundle.crt
       - NODE_APP_NAME=inde-self
       - NODE_APP_HOME=/opt/inde/inde-self
+      - NODE_SERVER_CONF:/opt/inde/config/config.json
       - NODE_SERVER_DIR=/opt/inde/inde-self/server
       - NODE_APP_DIR=/opt/inde/inde-self/appDirectory
       - NODE_DATA_DIR=/opt/inde/inde-self/data
       - NODE_LOG_DIR=/opt/inde/inde-self/log
     volumes:
-      - ./config/nodejs:/opt/inde/config:rw
-      - ./data/nodejs/inde-self/appDirectory/apps:/opt/inde/inde-self/appDirectory/apps:rw
+      - ./config/inde-self:/opt/inde/config:rw
+      - ./data/inde-self/appDirectory/apps:/opt/inde/inde-self/appDirectory/apps:rw
     ports:
       - "10181:8081"
       - "10182:8082"
+#    dns:
+#      - 1.1.1.1
+#      - 8.8.8.8
     networks:
       wms-network:
         aliases:
           - inde-self
 
-  wms-nodejs-cloud-connector:
+# DEBUG: docker run -it -e NODE_APP_NAME=cloud-connector -e NODE_SERVER_DIR="/opt/inde/cloud-connector" -v /opt/launch/config/nodejs/config.json:/opt/inde/cloud-connector/config.json -v /opt/launch/data/nodejs/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps izdock/nodejs-inde bash
+  cloud-connector:
     image: izdock/nodejs-inde:10.17.0
     restart: always
     stop_grace_period: 30s
+    command: [ "node", "cloudServer.js"]
     environment:
       - CONFIG_NAME=default
       - DOMAIN=initzero.it
       - ALIAS=app.initzero.it
       - SERVER_TYPE=initzero
       - SSL_CERT=/opt/inde/ssl/app.initzero.it.cert
-      - SSL_KEY=/opt/inde/ssl/app.initzero.it.key"
+      - SSL_KEY=/opt/inde/ssl/app.initzero.it.key
       - SSL_BUNDLE=/opt/inde/ssl/app.initzero.it_bundle.crt
       - NODE_APP_NAME=cloud-connector
       - NODE_APP_HOME=/opt/inde/cloud-connector
+      - NODE_SERVER_CONF=/opt/inde/cloud-connector/config.json
       - NODE_SERVER_DIR=/opt/inde/cloud-connector
       - NODE_APP_DIR=/opt/inde/cloud-connector/appDirectory
       - NODE_DATA_DIR=/opt/inde/cloud-connector/data
       - NODE_LOG_DIR=/opt/inde/cloud-connector/log
     volumes:
-      - ./config/nodejs:/opt/inde/config:rw
-      - ./data/nodejs/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps:rw
+      - ./config/cloud-connector/config.json:/opt/inde/cloud-connector/config.json:rw
+      - ./data/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps:rw
     ports:
       - "10281:8081"
       - "10282:8082"
+#    dns:
+#      - 1.1.1.1
+#      - 8.8.8.8
     networks:
       wms-network:
         aliases:
