@@ -4,61 +4,60 @@ services:
   wms-nodejs-inde-self:
     image: izdock/nodejs-inde:10.17.0
     restart: always
+    stop_grace_period: 30s
     environment:
-      - CONFIG_NAME="default"
-      - DOMAIN="initzero.it"
-      - ALIAS="app.initzero.it"
-      - SERVER_TYPE="initzero"
-      - SSL_CERT="/opt/inde/ssl/app.initzero.it.cert"
-      - SSL_KEY="/opt/inde/ssl/app.initzero.it.key"
-      - SSL_BUNDLE="/opt/inde/ssl/app.initzero.it_bundle.crt"
-      - NODE_APP_NAME="inde-self"
-      - NODE_APP_HOME="/opt/inde/inde-self"
-      - NODE_SERVER_DIR="/opt/inde/inde-self/server"
-      - NODE_APP_DIR="/opt/inde/inde-self/appDirectory"
-      - NODE_DATA_DIR="/opt/inde/inde-self/data"
-      - NODE_LOG_DIR="/opt/inde/inde-self/log"
+      - CONFIG_NAME=default
+      - DOMAIN=initzero.it
+      - ALIAS=app.initzero.it
+      - SERVER_TYPE=initzero
+      - SSL_CERT=/opt/inde/ssl/app.initzero.it.cert
+      - SSL_KEY=/opt/inde/ssl/app.initzero.it.key
+      - SSL_BUNDLE=/opt/inde/ssl/app.initzero.it_bundle.crt
+      - NODE_APP_NAME=inde-self
+      - NODE_APP_HOME=/opt/inde/inde-self
+      - NODE_SERVER_DIR=/opt/inde/inde-self/server
+      - NODE_APP_DIR=/opt/inde/inde-self/appDirectory
+      - NODE_DATA_DIR=/opt/inde/inde-self/data
+      - NODE_LOG_DIR=/opt/inde/inde-self/log
     volumes:
-      - ./config/nodejs/:/opt/inde/config/
-      - ./data/nodejs/inde-self/appDirectory/apps:/opt/inde/inde-self/appDirectory/apps
+      - ./config/nodejs:/opt/inde/config:rw
+      - ./data/nodejs/inde-self/appDirectory/apps:/opt/inde/inde-self/appDirectory/apps:rw
     ports:
       - "10181:8081"
-      - "10181:8082"
+      - "10182:8082"
     networks:
       wms-network:
         aliases:
           - inde-self
-    stop_grace_period: 30s
 
   wms-nodejs-cloud-connector:
     image: izdock/nodejs-inde:10.17.0
     restart: always
+    stop_grace_period: 30s
     environment:
-      - CONFIG_NAME="default"
-      - DOMAIN="initzero.it"
-      - ALIAS="app.initzero.it"
-      - SERVER_TYPE="initzero"
-      - SSL_CERT="/opt/inde/ssl/app.initzero.it.cert"
-      - SSL_KEY="/opt/inde/ssl/app.initzero.it.key"
-      - SSL_BUNDLE="/opt/inde/ssl/app.initzero.it_bundle.crt"
-      - NODE_APP_NAME="cloud-connector"
-      - NODE_APP_HOME="/opt/inde/cloud-connector"
-      - NODE_SERVER_DIR="/opt/inde/cloud-connector"
-      - NODE_APP_DIR="/opt/inde/cloud-connector/appDirectory"
-      - NODE_DATA_DIR="/opt/inde/cloud-connector/data"
-      - NODE_LOG_DIR="/opt/inde/cloud-connector/log"
+      - CONFIG_NAME=default
+      - DOMAIN=initzero.it
+      - ALIAS=app.initzero.it
+      - SERVER_TYPE=initzero
+      - SSL_CERT=/opt/inde/ssl/app.initzero.it.cert
+      - SSL_KEY=/opt/inde/ssl/app.initzero.it.key"
+      - SSL_BUNDLE=/opt/inde/ssl/app.initzero.it_bundle.crt
+      - NODE_APP_NAME=cloud-connector
+      - NODE_APP_HOME=/opt/inde/cloud-connector
+      - NODE_SERVER_DIR=/opt/inde/cloud-connector
+      - NODE_APP_DIR=/opt/inde/cloud-connector/appDirectory
+      - NODE_DATA_DIR=/opt/inde/cloud-connector/data
+      - NODE_LOG_DIR=/opt/inde/cloud-connector/log
     volumes:
-      - ./config/nodejs/:/opt/inde/config/
-      - ./data/nodejs/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps
+      - ./config/nodejs:/opt/inde/config:rw
+      - ./data/nodejs/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps:rw
     ports:
       - "10281:8081"
-      - "10281:8082"
+      - "10282:8082"
     networks:
       wms-network:
         aliases:
           - cloud-connector
-    stop_grace_period: 30s
-
 
 networks:
   wms-network:

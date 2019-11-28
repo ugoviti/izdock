@@ -67,4 +67,5 @@ if [ "$MULTISERVICE" = "true" ]; then
   set -x
   # run the process as user if specified
   [[ ! -z "${APP_USR}" && $UID = 0 ]] && exec $ENTRYPOINT runuser -p -u ${APP_USR} -- $@ || exec $ENTRYPOINT $@
+  #sleep 60
 fi

@@ -14,12 +14,12 @@
 : ${SSL_CERT:=""}
 : ${SSL_KEY:=""}
 : ${SSL_BUNDLE:=""}
-: ${NODE_APP_NAME:="inde-self"}
-: ${NODE_APP_HOME:="$APP_DATA/$NODE_APP_NAME"}
-: ${NODE_SERVER_DIR:="$NODE_APP_HOME/server"}
-: ${NODE_APP_DIR:="$NODE_APP_HOME/appDirectory"}
-: ${NODE_DATA_DIR:="$NODE_APP_HOME/data"}
-: ${NODE_LOG_DIR:="$NODE_APP_HOME/log"}
+: ${NODE_APP_NAME:=inde-self}
+: ${NODE_APP_HOME:=$APP_DATA/$NODE_APP_NAME}
+: ${NODE_SERVER_DIR:=$NODE_APP_HOME/server}
+: ${NODE_APP_DIR:=$NODE_APP_HOME/appDirectory}
+: ${NODE_DATA_DIR:=$NODE_APP_HOME/data}
+: ${NODE_LOG_DIR:=$NODE_APP_HOME/log}
 
 ## configure nodejs server
 cfgNodeJs() {
