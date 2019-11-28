@@ -44,9 +44,9 @@ hooks_always() {
   echo "=> Executing $APP_DESCRIPTION configuration hooks 'always'..."
 
   if [ -e "${NODE_SERVER_CONF}" ]; then
-    echo "config file '${APP_CONF}/config.json' detected... skipping reconfiguration"
+    echo "config file '${NODE_SERVER_CONF}' detected... skipping reconfiguration"
    else
-    echo "no config file '${APP_CONF}/config.json' detected... running reconfiguration"
+    echo "no config file '${NODE_SERVER_CONF}' detected... running reconfiguration"
     cfgNodeJs
   fi
   
