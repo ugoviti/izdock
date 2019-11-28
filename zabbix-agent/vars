@@ -1,0 +1,7 @@
+tag_ver_major=4
+tag_ver_minor=4
+tag_ver_patch=1
+
+tag_ver_build=3
+tag_latest=yes
+image_from=zabbix/zabbix-agent:centos-${tag_ver_major}.${tag_ver_minor}.${tag_ver_patch}

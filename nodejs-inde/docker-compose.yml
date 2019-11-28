@@ -2,7 +2,7 @@ version: '3'
 services:
 ## NODEJS
   wms-nodejs:
-    image: izdock/node_inde:latest
+    image: izdock/nodejs-inde
     ports:
       - "8081:8081"
       - "8082:8082"
