@@ -69,7 +69,8 @@ RUN set -ex && \
   mkdir -p ${APP_DATA} ${APP_CONF} && \
   : "---------- Installing InDe Self ----------" && \
   cd /usr/src && \
-  git clone https://github.com/progamma/inde-self.git && \
+  #git clone https://github.com/progamma/inde-self.git && \
+  git clone https://github.com/initzero-it/inde-self && \
   cd inde-self/public_html && \
   mkdir data appDirectory log && \
   npm install && npm audit fix --force && \
