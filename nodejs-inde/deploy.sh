@@ -1,5 +1,5 @@
-mkdir -p data/cloud-connector data/inde-self config/cloud-connector config/inde-self
-chown -R 993:993 data/cloud-connector data/inde-self config/cloud-connector config/inde-self
+mkdir -p data/cloud-connector data/inde-self conf/cloud-connector conf/inde-self
+chown -R 993:993 data/cloud-connector data/inde-self conf/cloud-connector conf/inde-self
 docker-compose up -d 
 
 #docker volume create portainer_data

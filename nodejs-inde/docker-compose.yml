@@ -21,7 +21,7 @@ services:
       - NODE_DATA_DIR=/opt/inde/inde-self/data
       - NODE_LOG_DIR=/opt/inde/inde-self/log
     volumes:
-      - ./config/inde-self:/opt/inde/config:rw
+      - ./conf/inde-self:/opt/inde/config:rw
       - ./data/inde-self/appDirectory/apps:/opt/inde/inde-self/appDirectory/apps:rw
     ports:
       - "10181:8081"
@@ -34,7 +34,7 @@ services:
         aliases:
           - inde-self
 
-# DEBUG: docker run -it -e NODE_APP_NAME=cloud-connector -e NODE_SERVER_DIR="/opt/inde/cloud-connector" -v /opt/launch/config/nodejs/config.json:/opt/inde/cloud-connector/config.json -v /opt/launch/data/nodejs/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps izdock/nodejs-inde bash
+# DEBUG: docker run -it -e NODE_APP_NAME=cloud-connector -e NODE_SERVER_DIR="/opt/inde/cloud-connector" -v /opt/launch/conf/nodejs/config.json:/opt/inde/cloud-connector/config.json -v /opt/launch/data/nodejs/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps izdock/nodejs-inde bash
   cloud-connector:
     image: izdock/nodejs-inde:10.17.0
     restart: always
@@ -56,7 +56,7 @@ services:
       - NODE_DATA_DIR=/opt/inde/cloud-connector/data
       - NODE_LOG_DIR=/opt/inde/cloud-connector/log
     volumes:
-      - ./config/cloud-connector/config.json:/opt/inde/cloud-connector/config.json:rw
+      - ./conf/cloud-connector/config.json:/opt/inde/cloud-connector/config.json:rw
       - ./data/cloud-connector/appDirectory/apps:/opt/inde/cloud-connector/appDirectory/apps:rw
     ports:
       - "10281:8081"
