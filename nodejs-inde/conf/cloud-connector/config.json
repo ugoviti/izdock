@@ -1,0 +1,22 @@
+{
+  "name": "cloud-connector",
+  "remoteServers": ["https://localhost:8082"],
+  "datamodels": [
+    {
+      "name": "cloud-connector",
+      "APIKey": "00000000-0000-0000-0000-000000000000",
+      "class": "MySQL",
+      "connectionOptions": {
+        "host": "nomeserver",
+        "database": "nomedb",
+        "user": "utente",
+        "password": "password",
+    "connectionLimit": 10
+      }
+    }
+  ],
+  "fileSystems": [
+  ],
+  "plugins": [
+  ]
+}

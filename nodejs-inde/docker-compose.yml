@@ -72,3 +72,6 @@ services:
 networks:
   wms-network:
     driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 172.18.253.0/24
